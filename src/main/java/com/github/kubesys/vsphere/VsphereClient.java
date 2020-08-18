@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
 
 import sun.misc.BASE64Encoder;
 
@@ -26,18 +27,24 @@ import sun.misc.BASE64Encoder;
  *
  */
 @SuppressWarnings("restriction")
-public class vSphereClient {
+public class VsphereClient {
 
-	@SuppressWarnings("unused")
 	private final String session;
 
 	private final String url;
 
-	public vSphereClient(String ip, String username, String password) {
+	/*********************************************************************
+	 * 
+	 * 
+	 *                     Init
+	 * 
+	 * 
+	 *******************************************************************/
+	public VsphereClient(String ip, String username, String password) {
 		this(ip, -1, username, password);
 	}
 
-	public vSphereClient(String ip, int port, String username, String password) {
+	public VsphereClient(String ip, int port, String username, String password) {
 		disableSslVerification();
 		this.url = "https://" + (port <= 0 ? ip : ip + ":" + port);
 		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
@@ -129,5 +136,33 @@ public class vSphereClient {
 		}
 	}
 
+
+	/*********************************************************************
+	 * 
+	 * 
+	 *                     Core
+	 * 
+	 * 
+	 *******************************************************************/
 	
+	public VirtualMachinePoolImpl virtualMachinePool() {
+		return new VirtualMachinePoolImpl(this);
+	}
+	
+	/*********************************************************************
+	 * 
+	 * 
+	 *                     Getter and Setter
+	 * 
+	 * 
+	 *******************************************************************/
+	
+	public String getSession() {
+		return session;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
 }
