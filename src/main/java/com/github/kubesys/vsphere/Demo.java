@@ -1,3 +1,6 @@
+/**
+ * Copyright (2020, ) Institute of Software, Chinese Academy of Sciences
+ */
 package com.github.kubesys.vsphere;
 
 import java.security.KeyManagementException;
@@ -26,10 +29,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sun.misc.BASE64Encoder;
 
 /**
- * Hello world!
+ * wuheng@otcaix.iscas.ac.cn
  *
  */
-public class App 
+public class Demo 
 {
 	static {
 		disableSslVerification();
@@ -91,7 +94,7 @@ public class App
 	RestTemplate restTemplate = new RestTemplate();
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	public App(String vcip, String vcUsername, String vcPassword) {
+	public Demo(String vcip, String vcUsername, String vcPassword) {
 		this.vcip = vcip;
 		this.vcUsername = vcUsername;
 		this.vcPassword = vcPassword;
@@ -1342,6 +1345,6 @@ public class App
 				mode, floatingIP, startingAddress, addressCount, subnetMask, gateway, masterDNS, masterDNSSearchDomains,
 				masterNTPServers, nsxEdgeClusterName, workerDNS, podCidrs, serviceCidr, ingressCidrs, egressCidrs,
 				storagePolicy);
-		new App(vcip, vcUsername, vcPassword).enableVsphereKubernetesCluster(clusterBean);
+		new Demo(vcip, vcUsername, vcPassword).enableVsphereKubernetesCluster(clusterBean);
 	}
 }

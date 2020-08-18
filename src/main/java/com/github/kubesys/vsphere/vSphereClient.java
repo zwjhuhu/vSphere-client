@@ -1,4 +1,5 @@
 /**
+ * Copyright (2020, ) Institute of Software, Chinese Academy of Sciences
  */
 package com.github.kubesys.vsphere;
 
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import sun.misc.BASE64Encoder;
 
 /**
- * Hello world!
+ * wuheng@otcaix.iscas.ac.cn
  *
  */
 @SuppressWarnings("restriction")
@@ -39,13 +40,8 @@ public class vSphereClient {
 	public vSphereClient(String ip, int port, String username, String password) {
 		disableSslVerification();
 		this.url = "https://" + (port <= 0 ? ip : ip + ":" + port);
-		String fullUrl = this.url + "/rest/com/vmware/cis/session";
-		String authString = username + ":" + password;
-		String base64Creds = new BASE64Encoder().encode(authString.getBytes());
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Basic " + base64Creds);
-		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(fullUrl, HttpMethod.POST,
-				new HttpEntity<String>(headers), Session.class);
+		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
+					getFullUrl(), HttpMethod.POST, getHttpEntity(username, password), Session.class);
 		this.session = responseEntity.getBody().getValue();
 	}
 
@@ -62,7 +58,27 @@ public class vSphereClient {
 			this.value = value;
 		}
 	}
+	
+	private String getFullUrl() {
+		return this.url + "/rest/com/vmware/cis/session";
+	}
 
+	private String getBase64Creds(String username, String password) {
+		String authString = username + ":" + password;
+		return new BASE64Encoder().encode(authString.getBytes());
+	}
+	
+	private HttpHeaders getHeaders(String base64Creds) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + base64Creds);
+		return headers;
+	}
+
+	private HttpEntity<String> getHttpEntity(String username, String password) {
+		return new HttpEntity<String>(getHeaders(
+				getBase64Creds(username, password)));
+	}
+	
 	private static void disableSslVerification() {
 		try {
 			// Create a trust manager that does not validate certificate chains
