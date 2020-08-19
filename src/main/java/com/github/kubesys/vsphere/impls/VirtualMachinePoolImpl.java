@@ -71,10 +71,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode getClusterInfo() {
-		String url = this.client.getUrl() + "/ui/data/urn:vmomi:ClusterComputeResource:domain-c16:9e4a98b3-189a-475b-b093-f5cda70cd2a5?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
+	public JsonNode getClusterInfo(String cluster, String jsessionId) {
+		
 		try {
-			return list(url);
+			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + cluster;
+			
+			String id = ui(clusterIdUrl, jsessionId).get(0).get("results").get(0).get("id").asText();
+			
+			String clusterInfoUrl = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
+			return ui(clusterInfoUrl, jsessionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

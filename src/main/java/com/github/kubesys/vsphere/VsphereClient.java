@@ -32,7 +32,11 @@ public class VsphereClient {
 	private final String session;
 
 	private final String url;
-
+	
+	private final String username;
+	
+	private final String password;
+	
 	/*********************************************************************
 	 * 
 	 * 
@@ -47,6 +51,8 @@ public class VsphereClient {
 	public VsphereClient(String ip, int port, String username, String password) {
 		disableSslVerification();
 		this.url = "https://" + (port <= 0 ? ip : ip + ":" + port);
+		this.username = username;
+		this.password = password;
 		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
 					getFullUrl(), HttpMethod.POST, getHttpEntity(username, password), Session.class);
 		this.session = responseEntity.getBody().getValue();
@@ -56,6 +62,7 @@ public class VsphereClient {
 	public static class Session {
 		@JsonProperty("value")
 		private String value;
+		
 
 		public String getValue() {
 			return value;
@@ -70,18 +77,18 @@ public class VsphereClient {
 		return this.url + "/rest/com/vmware/cis/session";
 	}
 
-	private String getBase64Creds(String username, String password) {
+	public static String getBase64Creds(String username, String password) {
 		String authString = username + ":" + password;
 		return new BASE64Encoder().encode(authString.getBytes());
 	}
 	
-	private HttpHeaders getHeaders(String base64Creds) {
+	public static HttpHeaders getHeaders(String base64Creds) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + base64Creds);
 		return headers;
 	}
 
-	private HttpEntity<String> getHttpEntity(String username, String password) {
+	public static HttpEntity<String> getHttpEntity(String username, String password) {
 		return new HttpEntity<String>(getHeaders(
 				getBase64Creds(username, password)));
 	}
@@ -163,6 +170,14 @@ public class VsphereClient {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 
 }
