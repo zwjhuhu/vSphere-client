@@ -34,6 +34,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listFolders() throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/folder");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listNetworks() throws Exception {
 		try {
 			return list(this.client.getUrl() + "/rest/vcenter/network");
@@ -65,6 +74,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	public JsonNode listVMs() throws Exception {
 		try {
 			return list(this.client.getUrl() + "/rest/vcenter/vm");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listVMTemplates() throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/vm_template");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

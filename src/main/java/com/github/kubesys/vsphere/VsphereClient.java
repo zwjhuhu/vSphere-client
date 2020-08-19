@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
 
 import sun.misc.BASE64Encoder;
@@ -154,6 +155,10 @@ public class VsphereClient {
 	
 	public VirtualMachinePoolImpl virtualMachinePool() {
 		return new VirtualMachinePoolImpl(this);
+	}
+	
+	public VirtualMachineImpl virtualMachines() {
+		return new VirtualMachineImpl(this);
 	}
 	
 	/*********************************************************************
