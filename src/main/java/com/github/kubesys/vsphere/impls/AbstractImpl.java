@@ -83,6 +83,12 @@ public abstract class AbstractImpl  {
 				HttpMethod.GET, getReq, JsonNode.class).getBody();
 	}
 	
+	protected JsonNode post(String url) throws Exception {
+		HttpEntity<String> getReq = new HttpEntity<>("", getListHttpHeaders());
+		return new RestTemplate().exchange(url, 
+				HttpMethod.POST, getReq, JsonNode.class).getBody();
+	}
+	
 	protected JsonNode ui(String url, String jsessionId) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
 		return new RestTemplate().exchange(url, 

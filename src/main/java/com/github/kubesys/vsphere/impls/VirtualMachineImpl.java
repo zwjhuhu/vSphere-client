@@ -24,4 +24,53 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		}
 		return null;
 	}
+	
+	public JsonNode getImageInfo(String vm) {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean start(String vm) {
+		try {
+			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/start");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean stop(String vm) {
+		try {
+			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/stop");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean suspend(String vm) {
+		try {
+			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/suspend");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean reset(String vm) {
+		try {
+			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/reset");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
