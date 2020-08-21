@@ -51,7 +51,7 @@ public abstract class AbstractImpl  {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Accept", "application/json");
 		if (client.getSession() != null) {
-			headers.set("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
+			headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
 		}
 		return headers;
 	}
@@ -112,10 +112,16 @@ public abstract class AbstractImpl  {
 				HttpMethod.PATCH, getReq, JsonNode.class).getBody();
 	}
 	
-	protected JsonNode ui(String url, String jsessionId) throws Exception {
+	protected JsonNode list(String url, String jsessionId) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
 		return new RestTemplate().exchange(url, 
 				HttpMethod.GET, getReq, JsonNode.class).getBody();
+	}
+	
+	protected JsonNode post(String url, String body, String jsessionId) throws Exception {
+		HttpEntity<String> getReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
+		return new RestTemplate().exchange(url, 
+				HttpMethod.POST, getReq, JsonNode.class).getBody();
 	}
 	
 }

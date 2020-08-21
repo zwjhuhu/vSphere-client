@@ -78,6 +78,26 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return false;
 	}
 	
+	public boolean reboot(String vm) {
+		try {
+			post(this.client.getUrl() + "/vcenter/vm/" + vm + "/guest/power?action=reboot");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean shutdown(String vm) {
+		try {
+			post(this.client.getUrl() + "/vcenter/vm/" + vm + "/guest/power?action=shutdown");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean delete(String vm) {
 		try {
 			remove(this.client.getUrl() + "/rest/vcenter/vm/" + vm);

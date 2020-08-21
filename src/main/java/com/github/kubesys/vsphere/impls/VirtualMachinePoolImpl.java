@@ -89,15 +89,25 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	// https://133.133.135.35/ui/events/?requestedPage=0
+	public JsonNode listEvents(String jsessionId) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/ui/events", jsessionId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode getClusterInfo(String cluster, String jsessionId) {
 		
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + cluster;
 			
-			String id = ui(clusterIdUrl, jsessionId).get(0).get("results").get(0).get("id").asText();
+			String id = list(clusterIdUrl, jsessionId).get(0).get("results").get(0).get("id").asText();
 			
 			String clusterInfoUrl = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
-			return ui(clusterInfoUrl, jsessionId);
+			return list(clusterInfoUrl, jsessionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

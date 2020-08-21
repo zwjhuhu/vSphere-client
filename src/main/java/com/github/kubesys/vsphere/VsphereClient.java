@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
+import com.github.kubesys.vsphere.impls.VirtualMachineNetworkImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
 
 import sun.misc.BASE64Encoder;
@@ -27,7 +28,6 @@ import sun.misc.BASE64Encoder;
  * wuheng@otcaix.iscas.ac.cn
  *
  */
-@SuppressWarnings("restriction")
 public class VsphereClient {
 
 	private final String session;
@@ -153,8 +153,12 @@ public class VsphereClient {
 	 * 
 	 *******************************************************************/
 	
-	public VirtualMachinePoolImpl virtualMachinePool() {
+	public VirtualMachinePoolImpl virtualMachinePools() {
 		return new VirtualMachinePoolImpl(this);
+	}
+	
+	public VirtualMachineNetworkImpl virtualMachineNetworks() {
+		return new VirtualMachineNetworkImpl(this);
 	}
 	
 	public VirtualMachineImpl virtualMachines() {
