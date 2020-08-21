@@ -25,6 +25,10 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode createFromTemplate() {
+		return null;
+	}
+	
 	public JsonNode getImageInfo(String vm) {
 		try {
 			return list(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
@@ -67,6 +71,54 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	public boolean reset(String vm) {
 		try {
 			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/reset");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean delete(String vm) {
+		try {
+			remove(this.client.getUrl() + "/rest/vcenter/vm/" + vm);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	static String CPU = "{\r\n" + 
+			"	\"spec\": {\r\n" + 
+			"		\"cores_per_socket\": 1,\r\n" + 
+			"		\"count\": NUMBER,\r\n" + 
+			"		\"hot_add_enabled\": false,\r\n" + 
+			"		\"hot_remove_enabled\": false\r\n" + 
+			"	}\r\n" + 
+			"}";
+	
+	public boolean updateCPU(String vm, int num) {
+		try {
+			
+			patch(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/hardware/cpu", CPU.replace("NUMBER", String.valueOf(num)));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	static String MEMORY = "{\r\n" + 
+			"    \"spec\": {\r\n" + 
+			"        \"hot_add_enabled\": false,\r\n" + 
+			"        \"size_MiB\": SIZE\r\n" + 
+			"    }\r\n" + 
+			"}";
+	
+	public boolean updateRAM(String vm, int size) {
+		try {
+			
+			patch(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
