@@ -52,6 +52,7 @@ public abstract class AbstractImpl  {
 		headers.add("Accept", "application/json");
 		if (client.getSession() != null) {
 			headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
+			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
 		}
 		return headers;
 	}
@@ -61,7 +62,9 @@ public abstract class AbstractImpl  {
 	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
 	 * 
 	 */
-	public String getJessionId() throws Exception {
+	public String getJessionId()  {
+		
+		try {
 		String loginUrl = client.getUrl() + "/ui/login";
 		ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(
 				loginUrl, HttpMethod.POST, new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
@@ -79,9 +82,12 @@ public abstract class AbstractImpl  {
 		
 		
 		String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
-		
+		} catch (Exception ex) {
+			
+		}
 		return null;
 	}
+	
 	
 	protected JsonNode list(String url) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
@@ -119,9 +125,50 @@ public abstract class AbstractImpl  {
 	}
 	
 	protected JsonNode post(String url, String body, String jsessionId) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
+		HttpEntity<String> postReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
 		return new RestTemplate().exchange(url, 
-				HttpMethod.POST, getReq, JsonNode.class).getBody();
+				HttpMethod.POST, postReq, JsonNode.class).getBody();
 	}
 	
+	protected JsonNode get(String url, String jsessionId) throws Exception {
+		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
+		System.out.println(url);
+		return new RestTemplate().exchange(url, 
+				HttpMethod.GET, getReq, JsonNode.class).getBody();
+	}
+	
+	public String searchRealname(String name, String type, String jsessionId) {
+		
+		try {
+			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
+			
+			JsonNode objects = list(clusterIdUrl, jsessionId);
+			
+			int objList = objects.size();
+			
+			for (int i = 0; i < objList; i++) {
+				JsonNode obj = objects.get(i);
+				if (obj.get("label").asText().equals(type)) {
+					
+					JsonNode results = obj.get("results");
+					
+					int resList = results.size();
+					
+					for (int j = 0; j < resList; j++) {
+						
+						JsonNode res = results.get(j);
+						
+						if (res.get("name").asText().equals(name)) {
+							
+							return res.get("id").asText();
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
