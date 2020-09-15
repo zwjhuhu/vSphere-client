@@ -18,14 +18,15 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kubesys.vsphere.VsphereClient;
 
 /**
  * wuheng@otcaix.iscas.ac.cn
  *
  */
-public abstract class AbstractImpl  {
-	
+public abstract class AbstractImpl {
+
 	/**
 	 * client
 	 */
@@ -35,7 +36,7 @@ public abstract class AbstractImpl  {
 		super();
 		this.client = client;
 	}
-	
+
 	protected HttpHeaders getDefHttpHeaders() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Accept", "application/json");
@@ -45,8 +46,7 @@ public abstract class AbstractImpl  {
 		}
 		return headers;
 	}
-	
-	
+
 	protected HttpHeaders getUIHttpHeaders(String jsessionId) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Accept", "application/json");
@@ -56,116 +56,113 @@ public abstract class AbstractImpl  {
 		}
 		return headers;
 	}
-	
+
 	/**
 	 * 
 	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
 	 * 
 	 */
-	public String getJessionId()  {
-		
+	public String getJessionId() {
+
+		ObjectNode node = new ObjectMapper().createObjectNode();
 		try {
-		String loginUrl = client.getUrl() + "/ui/login";
-		ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(
-				loginUrl, HttpMethod.POST, new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
-		
-		System.out.println(new ObjectMapper().writeValueAsString(loginResp));
-		String samlUrl = loginResp.getHeaders().get("Location").get(0);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(
-				client.getUsername(), client.getPassword()));
-		ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(
-				samlUrl, HttpMethod.POST, new HttpEntity<>("", headers), JsonNode.class);
-		System.out.println(new ObjectMapper().writeValueAsString(samlResp));
-		
-		
-		
-		String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
-		} catch (Exception ex) {
+			String loginUrl = client.getUrl() + "/ui/login";
+			ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(loginUrl, HttpMethod.POST ,
+					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
+
+			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
+			String samlUrl = loginResp.getHeaders().get("Location").get(0);
 			
+			HttpHeaders headers = new HttpHeaders();
+			for (String key : loginResp.getHeaders().keySet()) {
+				headers.put(key, loginResp.getHeaders().get(key));
+			}
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()));
+			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl, HttpMethod.POST,
+					new HttpEntity<>("CastleAuthorization=Basic%20" + VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()), headers), JsonNode.class);
+			
+			
+			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
+
+			String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
 		}
 		return null;
 	}
-	
-	
+
 	protected JsonNode list(String url) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, 
-				HttpMethod.GET, getReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode post(String url) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, 
-				HttpMethod.POST, getReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.POST, getReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode remove(String url) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, 
-				HttpMethod.DELETE, getReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.DELETE, getReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode patch(String url, String body) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>(body, getDefHttpHeaders());
-		CloseableHttpClient httpClient = HttpClientBuilder.create().setSSLContext(
-						new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-	                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
+		CloseableHttpClient httpClient = HttpClientBuilder.create()
+				.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-		return restTemplate.exchange(url, 
-				HttpMethod.PATCH, getReq, JsonNode.class).getBody();
+		return restTemplate.exchange(url, HttpMethod.PATCH, getReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode list(String url, String jsessionId) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
-		return new RestTemplate().exchange(url, 
-				HttpMethod.GET, getReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode post(String url, String body, String jsessionId) throws Exception {
 		HttpEntity<String> postReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
-		return new RestTemplate().exchange(url, 
-				HttpMethod.POST, postReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.POST, postReq, JsonNode.class).getBody();
 	}
-	
+
 	protected JsonNode get(String url, String jsessionId) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
 		System.out.println(url);
-		return new RestTemplate().exchange(url, 
-				HttpMethod.GET, getReq, JsonNode.class).getBody();
+		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
 	}
-	
+
 	public String searchRealname(String name, String type, String jsessionId) {
-		
+
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
-			
+
 			JsonNode objects = list(clusterIdUrl, jsessionId);
-			
+
 			int objList = objects.size();
-			
+
 			for (int i = 0; i < objList; i++) {
 				JsonNode obj = objects.get(i);
 				if (obj.get("label").asText().equals(type)) {
-					
+
 					JsonNode results = obj.get("results");
-					
+
 					int resList = results.size();
-					
+
 					for (int j = 0; j < resList; j++) {
-						
+
 						JsonNode res = results.get(j);
-						
+
 						if (res.get("name").asText().equals(name)) {
-							
+
 							return res.get("id").asText();
 						}
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
