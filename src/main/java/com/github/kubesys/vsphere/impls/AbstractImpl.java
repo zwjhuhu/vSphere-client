@@ -57,41 +57,7 @@ public abstract class AbstractImpl {
 		return headers;
 	}
 
-	/**
-	 * 
-	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
-	 * 
-	 */
-	public String getJessionId() {
-
-		ObjectNode node = new ObjectMapper().createObjectNode();
-		try {
-			String loginUrl = client.getUrl() + "/ui/login";
-			ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(loginUrl, HttpMethod.POST ,
-					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
-
-			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
-			String samlUrl = loginResp.getHeaders().get("Location").get(0);
-			
-			HttpHeaders headers = new HttpHeaders();
-			for (String key : loginResp.getHeaders().keySet()) {
-				headers.put(key, loginResp.getHeaders().get(key));
-			}
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()));
-			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl, HttpMethod.POST,
-					new HttpEntity<>("CastleAuthorization=Basic%20" + VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()), headers), JsonNode.class);
-			
-			
-			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
-
-			String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
-		} catch (Exception ex) {
-			ex.printStackTrace();
-
-		}
-		return null;
-	}
+	
 
 	protected JsonNode list(String url) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());

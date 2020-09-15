@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachineNetworkImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
@@ -144,6 +145,44 @@ public class VsphereClient {
 		}
 	}
 
+	/**
+	 * 
+	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
+	 * 
+	 */
+	public String getJessionId() {
+
+		try {
+			String loginUrl = getUrl() + "/ui/login";
+			ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(loginUrl, HttpMethod.POST ,
+					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
+
+			String string = loginResp.getHeaders().get("Set-Cookie").get(0);
+			int idx = string.indexOf("=");
+			int edx = string.indexOf(";");
+			return string.substring(idx + 1, edx);
+//			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
+//			String samlUrl = loginResp.getHeaders().get("Location").get(0);
+//			
+//			HttpHeaders headers = new HttpHeaders();
+//			for (String key : loginResp.getHeaders().keySet()) {
+//				headers.put(key, loginResp.getHeaders().get(key));
+//			}
+//			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(getUsername(), getPassword()));
+//			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl + "&CastleAuthorization=Basic%20"+ VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()), 
+//					HttpMethod.GET, new HttpEntity<>("", headers), JsonNode.class);
+//			
+//			
+//			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
+//
+//			String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
+		}
+		return null;
+	}
 
 	/*********************************************************************
 	 * 
@@ -165,6 +204,7 @@ public class VsphereClient {
 		return new VirtualMachineImpl(this);
 	}
 	
+	
 	/*********************************************************************
 	 * 
 	 * 
@@ -172,6 +212,8 @@ public class VsphereClient {
 	 * 
 	 * 
 	 *******************************************************************/
+	
+	
 	
 	public String getSession() {
 		return session;

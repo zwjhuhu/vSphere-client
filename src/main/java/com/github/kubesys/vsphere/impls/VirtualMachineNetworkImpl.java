@@ -41,7 +41,7 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 	}
 	
 	public JsonNode createL3(String dc, String uuid, String name) {
-		return createL3(dc, uuid, name, getJessionId());
+		return createL3(dc, uuid, name, client.getJessionId());
 	}
 	
 	public JsonNode createL3(String dc, String uuid, String name, String jsessionId) {
