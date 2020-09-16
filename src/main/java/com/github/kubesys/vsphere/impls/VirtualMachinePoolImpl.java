@@ -138,36 +138,9 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode getFolder(String name) throws Exception {
-		try {
-			return list(this.client.getUrl() + "/rest/vcenter/folder/" + name);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public JsonNode getNetwork(String name) throws Exception {
-		try {
-			return list(this.client.getUrl() + "/rest/vcenter/network/" + name);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public JsonNode getCluster(String name) throws Exception {
 		try {
 			return list(this.client.getUrl() + "/rest/vcenter/cluster/" + name);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public JsonNode getHost(String name) throws Exception {
-		try {
-			return list(this.client.getUrl() + "/rest/vcenter/host/" + name);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

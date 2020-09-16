@@ -3,10 +3,10 @@ package com.github.kubesys.vsphere;
 /**
  * Unit test for simple App.
  */
-public class GetDatacenterTest extends VsphereClientTest {
+public class GetDatastoreTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().getDataCenter("datacenter-2"));
+		System.out.println(client.virtualMachinePools().getDataStore("datastore-10"));
 	}
 }
 
