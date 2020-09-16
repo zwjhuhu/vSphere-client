@@ -6,7 +6,7 @@ package com.github.kubesys.vsphere;
 public class GetClusterInfoTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().getClusterInfo("Test123", "82F951F8351C42185619B3FB0FA52E7E"));
+		System.out.println(client.virtualMachinePools().getClusterInfo("Test123", "6644BA4503B13E67275CC04540A6FF43"));
 	}
 }
 

@@ -26,18 +26,18 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	}
 	
 	
-	static String clone = "{\r\n" + 
+	static String CLONE = "{\r\n" + 
 			"	\"vm\": {\r\n" + 
 			"		\"type\": \"VirtualMachine\",\r\n" + 
-			"		\"value\": \"vm-43\",\r\n" + 
-			"		\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"		\"value\": \"TEMPLATENAME\",\r\n" + 
+			"		\"serverGuid\": \"UUID\",\r\n" + 
 			"		\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
 			"	},\r\n" + 
 			"	\"name\": \"VMNAME\",\r\n" + 
 			"	\"folder\": {\r\n" + 
 			"		\"type\": \"Folder\",\r\n" + 
-			"		\"value\": \"group-v3\",\r\n" + 
-			"		\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"		\"value\": \"FOLDERNAME\",\r\n" + 
+			"		\"serverGuid\": \"UUID\",\r\n" + 
 			"		\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
 			"	},\r\n" + 
 			"	\"cloneSpec\": {\r\n" + 
@@ -47,14 +47,14 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"			\"host\": null,\r\n" + 
 			"			\"pool\": {\r\n" + 
 			"				\"type\": \"ResourcePool\",\r\n" + 
-			"				\"value\": \"resgroup-17\",\r\n" + 
-			"				\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"				\"value\": \"POOLNAME\",\r\n" + 
+			"				\"serverGuid\": \"UUID\",\r\n" + 
 			"				\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
 			"			},\r\n" + 
 			"			\"datastore\": {\r\n" + 
-			"				\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"				\"serverGuid\": \"UUID\",\r\n" + 
 			"				\"type\": \"Datastore\",\r\n" + 
-			"				\"value\": \"datastore-10\"\r\n" + 
+			"				\"value\": \"DATASTORENAME\"\r\n" + 
 			"			},\r\n" + 
 			"			\"profile\": [{\r\n" + 
 			"				\"_type\": \"com.vmware.vim.binding.vim.vm.DefaultProfileSpec\"\r\n" + 
@@ -63,9 +63,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"			\"disk\": [{\r\n" + 
 			"				\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec$DiskLocator\",\r\n" + 
 			"				\"datastore\": {\r\n" + 
-			"					\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"					\"serverGuid\": \"UUID\",\r\n" + 
 			"					\"type\": \"Datastore\",\r\n" + 
-			"					\"value\": \"datastore-10\"\r\n" + 
+			"					\"value\": \"DATASTORENAME\"\r\n" + 
 			"				},\r\n" + 
 			"				\"diskBackingInfo\": null,\r\n" + 
 			"				\"diskId\": 2000,\r\n" + 
@@ -79,10 +79,17 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public JsonNode createFromTemplate(String name, String template, String datastore) {
+	public JsonNode createFromTemplate(String name, String template, String folder, String datastore, String pool, String uuid, String jsessionId) {
 		
 		try {
-			return post(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec");
+			String JSON = CLONE.replace("NAME", name)
+							.replace("TEMPLATENAME", template)
+							.replace("FOLDERNAME", folder)
+							.replace("POOLNAME", pool)
+							.replace("DATASTORENAME", datastore)
+							.replaceAll("UUID", uuid);
+			System.out.println(JSON);
+			return post(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, jsessionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

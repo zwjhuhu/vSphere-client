@@ -79,6 +79,7 @@ public abstract class AbstractImpl {
 		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
 		return restTemplate.exchange(url, HttpMethod.PATCH, getReq, JsonNode.class).getBody();
 	}
+	
 
 	protected JsonNode list(String url, String jsessionId) throws Exception {
 		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
