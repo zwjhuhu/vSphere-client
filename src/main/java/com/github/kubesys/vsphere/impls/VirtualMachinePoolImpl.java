@@ -16,6 +16,11 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		super(client);
 	}
 
+	/***************************************************************
+	 * 
+	 *                  List
+	 * 
+	 ****************************************************************/
 	public JsonNode listDataCenters() throws Exception {
 		try {
 			return list(this.client.getUrl() + "/rest/vcenter/datacenter");
@@ -82,7 +87,16 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	
 	public JsonNode listVMTemplates() throws Exception {
 		try {
-			return list(this.client.getUrl() + "/rest/vcenter/vm_template");
+			return list(this.client.getUrl() + "/rest/vcenter/vm_template/library-items");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listResourcePools() throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/resource-pool");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,12 +113,96 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	
+	/***************************************************************
+	 * 
+	 *                  Get
+	 * 
+	 ****************************************************************/
+	
+	public JsonNode getDataCenter(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/datacenter/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getDataStore(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/datastore/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getFolder(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/folder/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getNetwork(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/network/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getCluster(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/cluster/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getHost(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/host/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public JsonNode getVM(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/vm/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getResourcePool(String name) throws Exception {
+		try {
+			return list(this.client.getUrl() + "/rest/vcenter/resource-pool/" + name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode getClusterInfo(String cluster, String jsessionId) {
 		
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + cluster;
 			
-			String id = list(clusterIdUrl, jsessionId).get(0).get("results").get(0).get("id").asText();
+			JsonNode list = list(clusterIdUrl, jsessionId);
+			System.out.println(list);
+			String id = 
+					
+					list.get(0).get("results").get(0).get("id").asText();
 			
 			String clusterInfoUrl = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
 			return list(clusterInfoUrl, jsessionId);

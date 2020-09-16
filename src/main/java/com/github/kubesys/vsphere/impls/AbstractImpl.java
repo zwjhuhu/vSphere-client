@@ -11,14 +11,10 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kubesys.vsphere.VsphereClient;
 
 /**
@@ -52,7 +48,7 @@ public abstract class AbstractImpl {
 		headers.add("Accept", "application/json");
 		if (client.getSession() != null) {
 			headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
-			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
+//			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
 		}
 		return headers;
 	}
@@ -126,6 +122,43 @@ public abstract class AbstractImpl {
 							return res.get("id").asText();
 						}
 					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode search(String name, String type, String jsessionId) {
+
+		try {
+			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
+
+			JsonNode objects = list(clusterIdUrl, jsessionId);
+
+			int objList = objects.size();
+
+			for (int i = 0; i < objList; i++) {
+				JsonNode obj = objects.get(i);
+				if (obj.get("label").asText().equals(type)) {
+
+					JsonNode results = obj.get("results");
+
+					int resList = results.size();
+
+					for (int j = 0; j < resList; j++) {
+
+						JsonNode res = results.get(j);
+
+						if (res.get("name").asText().equals(name)) {
+
+							return res;
+						}
+					}
+					
+					return results.get(0);
 				}
 			}
 

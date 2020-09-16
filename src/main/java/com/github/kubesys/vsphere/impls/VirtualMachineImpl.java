@@ -25,7 +25,67 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode createFromTemplate() {
+	
+	static String clone = "{\r\n" + 
+			"	\"vm\": {\r\n" + 
+			"		\"type\": \"VirtualMachine\",\r\n" + 
+			"		\"value\": \"vm-43\",\r\n" + 
+			"		\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"		\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"	},\r\n" + 
+			"	\"name\": \"VMNAME\",\r\n" + 
+			"	\"folder\": {\r\n" + 
+			"		\"type\": \"Folder\",\r\n" + 
+			"		\"value\": \"group-v3\",\r\n" + 
+			"		\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"		\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"	},\r\n" + 
+			"	\"cloneSpec\": {\r\n" + 
+			"		\"_type\": \"com.vmware.vim.binding.vim.vm.CloneSpec\",\r\n" + 
+			"		\"location\": {\r\n" + 
+			"			\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec\",\r\n" + 
+			"			\"host\": null,\r\n" + 
+			"			\"pool\": {\r\n" + 
+			"				\"type\": \"ResourcePool\",\r\n" + 
+			"				\"value\": \"resgroup-17\",\r\n" + 
+			"				\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"				\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"			},\r\n" + 
+			"			\"datastore\": {\r\n" + 
+			"				\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"				\"type\": \"Datastore\",\r\n" + 
+			"				\"value\": \"datastore-10\"\r\n" + 
+			"			},\r\n" + 
+			"			\"profile\": [{\r\n" + 
+			"				\"_type\": \"com.vmware.vim.binding.vim.vm.DefaultProfileSpec\"\r\n" + 
+			"			}],\r\n" + 
+			"			\"deviceChange\": [],\r\n" + 
+			"			\"disk\": [{\r\n" + 
+			"				\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec$DiskLocator\",\r\n" + 
+			"				\"datastore\": {\r\n" + 
+			"					\"serverGuid\": \"9e4a98b3-189a-475b-b093-f5cda70cd2a5\",\r\n" + 
+			"					\"type\": \"Datastore\",\r\n" + 
+			"					\"value\": \"datastore-10\"\r\n" + 
+			"				},\r\n" + 
+			"				\"diskBackingInfo\": null,\r\n" + 
+			"				\"diskId\": 2000,\r\n" + 
+			"				\"profile\": [{\r\n" + 
+			"					\"_type\": \"com.vmware.vim.binding.vim.vm.DefaultProfileSpec\"\r\n" + 
+			"				}]\r\n" + 
+			"			}]\r\n" + 
+			"		},\r\n" + 
+			"		\"template\": false,\r\n" + 
+			"		\"powerOn\": false\r\n" + 
+			"	}\r\n" + 
+			"}";
+	
+	public JsonNode createFromTemplate(String name, String template, String datastore) {
+		
+		try {
+			return post(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
@@ -71,16 +131,6 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	public boolean reset(String vm) {
 		try {
 			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/reset");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public boolean reboot(String vm) {
-		try {
-			post(this.client.getUrl() + "/vcenter/vm/" + vm + "/guest/power?action=reboot");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
