@@ -112,6 +112,7 @@ public class Demo
 		ResponseEntity<Session> responseEntity = restTemplate.exchange(url, HttpMethod.POST,
 				new HttpEntity<String>(headers), Session.class);
 		session = responseEntity.getBody().getValue();
+		System.out.println(responseEntity.getHeaders());
 		System.out.println("session::" + session);
 	}
 
@@ -1300,51 +1301,52 @@ public class Demo
 
 	public static void main(String[] args) {
 
-		// vCenter credentials
-		String vcip = "10.0.0.10";
-		String vcUsername = "Administrator@vsphere.local";
-		String vcPassword = "ndjkndsknsk";
-
-		// Cluster name
-		String clusterName = "Cluster1";
-		// Master size
-		String sizeHint = "TINY"; // TINY, SMALL, MEDIUM, LARGE
-
-		// Management Network
-		String networkName = "VM Network";
-		String mode = "STATICRANGE"; // STATICRANGE or DHCP
-
-		// Optional: Set floatingIP, if mode is DHCP otherwise set to null
-		String floatingIP = null;
-
-		// Optional: Set Addressrange, if mode is STATICRANGE
-		String startingAddress = "10.0.0.50";
-		int addressCount = 5;
-		String subnetMask = "255.255.255.0";
-		String gateway = "10.0.0.253";
-
-		// Master DNS & NTP
-		String masterDNS[] = { "10.0.0.100" };
-		String masterNTPServers[] = { "10.0.0.102" };
-		String masterDNSSearchDomains[] = { "vsphere.local" };
-
-		// Workload Network
-		String nsxEdgeClusterName = null; // Optional, it automatically selects
-											// compatible edgecluster from the
-											// compatible VDS.
-		String workerDNS[] = { "10.0.0.101" };
-		String podCidrs[] = { "10.244.0.0/21" };
-		String serviceCidr = "10.96.0.0/24";
-		String ingressCidrs[] = { "10.100.10.0/24" };
-		String egressCidrs[] = { "10.100.20.0/24" };
-
-		// VM Storage Policy name
-		String storagePolicy = "storagepolicy1";
-
-		VsphereKubernetesClusterBean clusterBean = new VsphereKubernetesClusterBean(clusterName, sizeHint, networkName,
-				mode, floatingIP, startingAddress, addressCount, subnetMask, gateway, masterDNS, masterDNSSearchDomains,
-				masterNTPServers, nsxEdgeClusterName, workerDNS, podCidrs, serviceCidr, ingressCidrs, egressCidrs,
-				storagePolicy);
-		new Demo(vcip, vcUsername, vcPassword).enableVsphereKubernetesCluster(clusterBean);
+		new Demo("133.133.135.35", "administrator@vsphere.test", "Onceas2020!234").createAPISession();
+//		// vCenter credentials
+//		String vcip = "10.0.0.10";
+//		String vcUsername = "Administrator@vsphere.local";
+//		String vcPassword = "ndjkndsknsk";
+//
+//		// Cluster name
+//		String clusterName = "Cluster1";
+//		// Master size
+//		String sizeHint = "TINY"; // TINY, SMALL, MEDIUM, LARGE
+//
+//		// Management Network
+//		String networkName = "VM Network";
+//		String mode = "STATICRANGE"; // STATICRANGE or DHCP
+//
+//		// Optional: Set floatingIP, if mode is DHCP otherwise set to null
+//		String floatingIP = null;
+//
+//		// Optional: Set Addressrange, if mode is STATICRANGE
+//		String startingAddress = "10.0.0.50";
+//		int addressCount = 5;
+//		String subnetMask = "255.255.255.0";
+//		String gateway = "10.0.0.253";
+//
+//		// Master DNS & NTP
+//		String masterDNS[] = { "10.0.0.100" };
+//		String masterNTPServers[] = { "10.0.0.102" };
+//		String masterDNSSearchDomains[] = { "vsphere.local" };
+//
+//		// Workload Network
+//		String nsxEdgeClusterName = null; // Optional, it automatically selects
+//											// compatible edgecluster from the
+//											// compatible VDS.
+//		String workerDNS[] = { "10.0.0.101" };
+//		String podCidrs[] = { "10.244.0.0/21" };
+//		String serviceCidr = "10.96.0.0/24";
+//		String ingressCidrs[] = { "10.100.10.0/24" };
+//		String egressCidrs[] = { "10.100.20.0/24" };
+//
+//		// VM Storage Policy name
+//		String storagePolicy = "storagepolicy1";
+//
+//		VsphereKubernetesClusterBean clusterBean = new VsphereKubernetesClusterBean(clusterName, sizeHint, networkName,
+//				mode, floatingIP, startingAddress, addressCount, subnetMask, gateway, masterDNS, masterDNSSearchDomains,
+//				masterNTPServers, nsxEdgeClusterName, workerDNS, podCidrs, serviceCidr, ingressCidrs, egressCidrs,
+//				storagePolicy);
+//		new Demo(vcip, vcUsername, vcPassword).enableVsphereKubernetesCluster(clusterBean);
 	}
 }

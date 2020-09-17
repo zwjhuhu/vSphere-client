@@ -14,11 +14,14 @@ import javax.security.cert.X509Certificate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachineNetworkImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
@@ -39,6 +42,8 @@ public class VsphereClient {
 	
 	private final String password;
 	
+	public static String version;
+	
 	/*********************************************************************
 	 * 
 	 * 
@@ -51,6 +56,10 @@ public class VsphereClient {
 	}
 
 	public VsphereClient(String ip, int port, String username, String password) {
+		this(ip, port, username, password, "6.7");
+	}
+	
+	public VsphereClient(String ip, int port, String username, String password, String version) {
 		disableSslVerification();
 		this.url = "https://" + (port <= 0 ? ip : ip + ":" + port);
 		this.username = username;
@@ -58,6 +67,7 @@ public class VsphereClient {
 		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
 					getFullUrl(), HttpMethod.POST, getHttpEntity(username, password), Session.class);
 		this.session = responseEntity.getBody().getValue();
+		VsphereClient.version = version;
 	}
 
 	@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
@@ -150,33 +160,75 @@ public class VsphereClient {
 	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
 	 * 
 	 */
-	public String getJessionId() {
+	public String getUIJessionId() {
 
 		try {
 			String loginUrl = getUrl() + "/ui/login";
 			ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(loginUrl, HttpMethod.POST ,
 					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
 
-			String string = loginResp.getHeaders().get("Set-Cookie").get(0);
-			int idx = string.indexOf("=");
-			int edx = string.indexOf(";");
-			return string.substring(idx + 1, edx);
-//			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
-//			String samlUrl = loginResp.getHeaders().get("Location").get(0);
-//			
-//			HttpHeaders headers = new HttpHeaders();
-//			for (String key : loginResp.getHeaders().keySet()) {
-//				headers.put(key, loginResp.getHeaders().get(key));
-//			}
-//			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(getUsername(), getPassword()));
-//			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl + "&CastleAuthorization=Basic%20"+ VsphereClient.getBase64Creds(client.getUsername(), client.getPassword()), 
-//					HttpMethod.GET, new HttpEntity<>("", headers), JsonNode.class);
-//			
-//			
-//			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
+			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
+			
+			
+			String samlUrl = loginResp.getHeaders().get("Location").get(0);
+			
+			String ssoUrl = getUrl() + "/ui/saml/websso/sso";
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(getUsername(), getPassword()));
+			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl + "&CastleAuthorization=Basic%20"+ VsphereClient.getBase64Creds(getUsername(), getPassword()), 
+					HttpMethod.GET, new HttpEntity<>("", headers), JsonNode.class);
+			
+			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
 //
 //			String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
+		}
+		return null;
+	}
+	
+	public JsonNode loginUrl() {
+
+		try {
+			String loginUrl = getUrl() + "/ui/login";
+			ResponseEntity<JsonNode> loginResp = new RestTemplate()
+					.exchange(loginUrl, HttpMethod.POST,
+					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
+
+			return new ObjectMapper().readTree(
+					new ObjectMapper().writeValueAsBytes(loginResp));
+			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+
+		}
+		return null;
+	}
+	
+	public JsonNode samlUrl(String url, String token) {
+
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("ContentType", "application/x-www-form-urlencoded");
+//			headers.add("Authorization", "Basic " + token);
+//			headers.add("KeepAlive ", "true");
+//			headers.add("AllowAutoRedirect  ", "false");
+			
+			ObjectNode node = new ObjectMapper().createObjectNode();
+			node.put("CastleAuthorization", "Basic%20" + token);
+			
+			HttpEntity<ObjectNode> request = new HttpEntity<>(node, headers);
+			
+			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(url, 
+					HttpMethod.POST,
+					request, JsonNode.class);
+
+			return new ObjectMapper().readTree(
+					new ObjectMapper().writeValueAsBytes(samlResp));
+			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 
