@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachineNetworkImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
@@ -42,7 +41,7 @@ public class VsphereClient {
 	
 	private final String password;
 	
-	public static String version;
+	public static String VERSION;
 	
 	/*********************************************************************
 	 * 
@@ -60,14 +59,18 @@ public class VsphereClient {
 	}
 	
 	public VsphereClient(String ip, int port, String username, String password, String version) {
+		this("https", ip, port, username, password, version);
+	}
+	
+	public VsphereClient(String protocol, String ip, int port, String username, String password, String version) {
 		disableSslVerification();
-		this.url = "https://" + (port <= 0 ? ip : ip + ":" + port);
+		this.url = protocol + "://" + (port <= 0 ? ip : ip + ":" + port);
 		this.username = username;
 		this.password = password;
 		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
 					getFullUrl(), HttpMethod.POST, getHttpEntity(username, password), Session.class);
 		this.session = responseEntity.getBody().getValue();
-		VsphereClient.version = version;
+		VERSION = version;
 	}
 
 	@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
@@ -194,9 +197,11 @@ public class VsphereClient {
 
 		try {
 			String loginUrl = getUrl() + "/ui/login";
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
 			ResponseEntity<JsonNode> loginResp = new RestTemplate()
 					.exchange(loginUrl, HttpMethod.POST,
-					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
+					new HttpEntity<>("", headers), JsonNode.class);
 
 			return new ObjectMapper().readTree(
 					new ObjectMapper().writeValueAsBytes(loginResp));
@@ -212,19 +217,16 @@ public class VsphereClient {
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("ContentType", "application/x-www-form-urlencoded");
-//			headers.add("Authorization", "Basic " + token);
-//			headers.add("KeepAlive ", "true");
-//			headers.add("AllowAutoRedirect  ", "false");
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			headers.add("Authorization", "Basic " + token);
+			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
 			
-			ObjectNode node = new ObjectMapper().createObjectNode();
-			node.put("CastleAuthorization", "Basic%20" + token);
+			HttpEntity<String> request = new HttpEntity<>("CastleAuthorization=Basic%20" + token, headers);
 			
-			HttpEntity<ObjectNode> request = new HttpEntity<>(node, headers);
-			
-			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(url, 
+			ResponseEntity<Object> samlResp = new RestTemplate()
+					.exchange(url, 
 					HttpMethod.POST,
-					request, JsonNode.class);
+					request, Object.class);
 
 			return new ObjectMapper().readTree(
 					new ObjectMapper().writeValueAsBytes(samlResp));

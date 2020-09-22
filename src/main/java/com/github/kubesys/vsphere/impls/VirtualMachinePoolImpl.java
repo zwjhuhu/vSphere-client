@@ -172,7 +172,6 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + cluster;
 			
 			JsonNode list = list(clusterIdUrl, jsessionId);
-			System.out.println(list);
 			String id = 
 					
 					list.get(0).get("results").get(0).get("id").asText();

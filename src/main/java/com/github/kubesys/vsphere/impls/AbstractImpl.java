@@ -47,12 +47,12 @@ public abstract class AbstractImpl {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Accept", "application/json");
 		if (client.getSession() != null) {
-			if (VsphereClient.version.equals("6.7")) {
+			if (VsphereClient.VERSION.equals("6.7")) {
 				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
-			} else if (VsphereClient.version.equals("6.5")) {
+			} else if (VsphereClient.VERSION.equals("6.5")) {
 				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";JSESSIONID=" + jsessionId);
 			}
-			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
+//			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
 		}
 		return headers;
 	}
