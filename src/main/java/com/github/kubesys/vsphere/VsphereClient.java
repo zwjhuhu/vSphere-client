@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -225,7 +224,7 @@ public class VsphereClient {
 	public Response webssoUrl(String cookie, String parameter) throws Exception {
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "SAMLResponse=" + parameter);
+		RequestBody body = RequestBody.create(mediaType, "SAMLResponse=" + URLEncoder.encode(parameter));
 		
 		Request request = new Request.Builder()
 				.url(this.url + "/ui/saml/websso/sso")
@@ -267,20 +266,16 @@ public class VsphereClient {
 		String line = null;
 		
 		while ((line = br.readLine()) != null) {
-			sb.append(line);
+			sb.append(line).append("\r\n");
 		}
 		
-		String value = sb.toString();
+		String value = sb.substring(0, sb.length() - 2).toString();
 		int sIdx = value.indexOf("value=\"");
 		int mIdx = value.indexOf("<input type=\"submit\"");
 		int eIdx = value.substring(0, mIdx).lastIndexOf("\"");
 		return value.substring(sIdx + 7, eIdx);
 	}
 
-	public String urlEncode(String value) throws Exception {
-		return URLEncoder.encode(value, "utf-8");
-	}
-	
 	/*********************************************************************
 	 * 
 	 * 

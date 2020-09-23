@@ -1,6 +1,7 @@
-package com.github.kubesys.vsphere;
+package com.github.kubesys.vsphere.login;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.kubesys.vsphere.VsphereClientTest;
 
 /**
  * Unit test for simple App.

@@ -1,4 +1,6 @@
-package com.github.kubesys.vsphere;
+package com.github.kubesys.vsphere.list;
+
+import com.github.kubesys.vsphere.VsphereClientTest;
 
 /**
  * Unit test for simple App.
