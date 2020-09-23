@@ -3,20 +3,17 @@
  */
 package com.github.kubesys.vsphere;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.security.cert.X509Certificate;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,6 +22,11 @@ import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachineNetworkImpl;
 import com.github.kubesys.vsphere.impls.VirtualMachinePoolImpl;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -35,6 +37,8 @@ public class VsphereClient {
 
 	private final String session;
 
+	private final OkHttpClient httpClient;
+	
 	private final String url;
 	
 	private final String username;
@@ -43,36 +47,135 @@ public class VsphereClient {
 	
 	public static String VERSION;
 	
+	
+	
 	/*********************************************************************
 	 * 
 	 * 
 	 *                     Init
+	 * @throws Exception 
 	 * 
 	 * 
 	 *******************************************************************/
-	public VsphereClient(String ip, String username, String password) {
+	public VsphereClient(String ip, String username, String password) throws Exception {
 		this(ip, -1, username, password);
 	}
 
-	public VsphereClient(String ip, int port, String username, String password) {
+	public VsphereClient(String ip, int port, String username, String password) throws Exception {
 		this(ip, port, username, password, "6.7");
 	}
 	
-	public VsphereClient(String ip, int port, String username, String password, String version) {
+	public VsphereClient(String ip, int port, String username, String password, String version) throws Exception {
 		this("https", ip, port, username, password, version);
 	}
 	
-	public VsphereClient(String protocol, String ip, int port, String username, String password, String version) {
-		disableSslVerification();
+	public VsphereClient(String protocol, String ip, int port, String username, String password, String version) throws Exception {
 		this.url = protocol + "://" + (port <= 0 ? ip : ip + ":" + port);
 		this.username = username;
 		this.password = password;
-		ResponseEntity<Session> responseEntity = new RestTemplate().exchange(
-					getFullUrl(), HttpMethod.POST, getHttpEntity(username, password), Session.class);
-		this.session = responseEntity.getBody().getValue();
 		VERSION = version;
+		this.httpClient = createHttpClient();
+		
+		Request request = createPostRequest(this.url + 
+				"/rest/com/vmware/cis/session", "text/plain", "");
+		
+		Response resp = httpClient.newCall(request).execute();
+		this.session = new ObjectMapper().readTree(resp.body().byteStream()).get("value").asText();
 	}
 
+
+	/*******************************************************
+	 * 
+	 *
+	 *               Create
+	 * 
+	 ********************************************************/
+	
+	protected Request createPostRequest(String url, String type, String body) {
+		return new Request.Builder()
+		  .url(url)
+		  .addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+		  .method("POST", createPostBody(type, body))
+		  .build();
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected RequestBody createPostBody(String type, String obj) {
+		MediaType mediaType = MediaType.parse(type);
+		return RequestBody.create(mediaType, obj);
+	}
+
+	protected OkHttpClient createHttpClient() throws Exception {
+		X509TrustManager initTrustManager = initTrustManager();
+		return new OkHttpClient.Builder()
+				.sslSocketFactory(initSslSocketFactory(
+    							initTrustManager), initTrustManager)
+				.hostnameVerifier(initHostnameVerifier())
+				.followRedirects(false)
+				.build();
+	}
+
+	/**
+	 * @param trustManager                    trustManager
+	 * @return                                SSLSocketFactory
+	 * @throws NoSuchAlgorithmException       NoSuchAlgorithmException
+	 * @throws KeyManagementException         KeyManagementException
+	 */
+	protected SSLSocketFactory initSslSocketFactory(X509TrustManager trustManager)
+			throws NoSuchAlgorithmException, KeyManagementException {
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[]{trustManager}, null);
+		return sslContext.getSocketFactory();
+	}
+	
+	/**
+	 * @return                                X509TrustManager  
+	 */
+	protected X509TrustManager initTrustManager() {
+		return new X509TrustManager() {
+
+			@Override
+		    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		    	// Do nothing
+				if (chain == null) {
+		    		throw new CertificateException("Client is not using tls");
+		    	}
+		    }
+
+		    @Override
+		    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		    	// Do nothing
+		    	if (chain == null) {
+		    		throw new CertificateException("Server is not using tls");
+		    	}
+		    }
+
+		    @Override
+		    public X509Certificate[] getAcceptedIssuers() {
+		        return new X509Certificate[0];
+		    }
+		};
+	}
+
+	/**
+	 * @return                                hostnameVerifier   
+	 */
+	protected HostnameVerifier initHostnameVerifier() {
+		return new HostnameVerifier() {
+
+			@Override
+			public String toString() {
+				return super.toString();
+			}
+
+			@Override
+			public boolean verify(String hostname, SSLSession arg1) {
+				return hostname != null;
+			}
+			
+		};
+	}
+	
 	@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Session {
 		@JsonProperty("value")
@@ -88,155 +191,66 @@ public class VsphereClient {
 		}
 	}
 	
-	private String getFullUrl() {
-		return this.url + "/rest/com/vmware/cis/session";
-	}
-
 	public static String getBase64Creds(String username, String password) {
 		String authString = username + ":" + password;
 		return new BASE64Encoder().encode(authString.getBytes());
 	}
 	
-	public static HttpHeaders getHeaders(String base64Creds) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Basic " + base64Creds);
-		return headers;
-	}
-
-	public static HttpEntity<String> getHttpEntity(String username, String password) {
-		return new HttpEntity<String>(getHeaders(
-				getBase64Creds(username, password)));
-	}
-	
-	private static void disableSslVerification() {
-		try {
-			// Create a trust manager that does not validate certificate chains
-			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-
-				@SuppressWarnings("unused")
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				}
-
-				@SuppressWarnings("unused")
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				}
-
-				@Override
-				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
-						throws java.security.cert.CertificateException {
-
-				}
-
-				@Override
-				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
-						throws java.security.cert.CertificateException {
-
-				}
-
-			} };
-
-			// Install the all-trusting trust manager
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-			// Create all-trusting host name verifier
-			HostnameVerifier allHostsValid = new HostnameVerifier() {
-
-				public boolean verify(String hostname, SSLSession session) {
-					return true;
-				}
-			};
-
-			// Install the all-trusting host verifier
-			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * 
 	 * https://stackoverflow.com/questions/59647549/how-do-i-filter-using-a-partial-vm-name-string-in-vmware-vsphere-client-rest-a/61959622
+	 * @throws Exception 
 	 * 
 	 */
-	public String getUIJessionId() {
+	public JsonNode loginUrl() throws Exception {
 
-		try {
-			String loginUrl = getUrl() + "/ui/login";
-			ResponseEntity<JsonNode> loginResp = new RestTemplate().exchange(loginUrl, HttpMethod.POST ,
-					new HttpEntity<>("", new HttpHeaders()), JsonNode.class);
-
-			System.out.println(new ObjectMapper().writeValueAsString(loginResp));
+		Request request = new Request.Builder()
+				.url(this.url + "/ui/login")
+				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				.method("GET", null)
+				.build();
+				
+		return new ObjectMapper().readTree(new ObjectMapper().writeValueAsBytes(
+						httpClient.newCall(request).execute().headers()));
 			
-			
-			String samlUrl = loginResp.getHeaders().get("Location").get(0);
-			
-			String ssoUrl = getUrl() + "/ui/saml/websso/sso";
-			
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.add("Authorization", "Basic " + VsphereClient.getBase64Creds(getUsername(), getPassword()));
-			ResponseEntity<JsonNode> samlResp = new RestTemplate().exchange(samlUrl + "&CastleAuthorization=Basic%20"+ VsphereClient.getBase64Creds(getUsername(), getPassword()), 
-					HttpMethod.GET, new HttpEntity<>("", headers), JsonNode.class);
-			
-			System.out.println(new ObjectMapper().writeValueAsString(samlResp));
+	}
+	
+	public String getKeyInHeader(String key, JsonNode json) {
+		int size = json.size();
+		for (int i = 0; i < size; i++) {
+			JsonNode item = json.get(i);
+			if (item.get("first").asText().equals(key)) {
+				return item.get("second").asText();
+			}
+		}
+		return null;
+	}
+//	
+//	public JsonNode samlUrl(String url, String token) {
 //
-//			String fullUrl = client.getUrl() + "/ui/saml/websso/sso";
-		} catch (Exception ex) {
-			ex.printStackTrace();
-
-		}
-		return null;
-	}
-	
-	public JsonNode loginUrl() {
-
-		try {
-			String loginUrl = getUrl() + "/ui/login";
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
-			ResponseEntity<JsonNode> loginResp = new RestTemplate()
-					.exchange(loginUrl, HttpMethod.POST,
-					new HttpEntity<>("", headers), JsonNode.class);
-
-			return new ObjectMapper().readTree(
-					new ObjectMapper().writeValueAsBytes(loginResp));
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
-
-		}
-		return null;
-	}
-	
-	public JsonNode samlUrl(String url, String token) {
-
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.add("Authorization", "Basic " + token);
-			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
-			
-			HttpEntity<String> request = new HttpEntity<>("CastleAuthorization=Basic%20" + token, headers);
-			
-			ResponseEntity<Object> samlResp = new RestTemplate()
-					.exchange(url, 
-					HttpMethod.POST,
-					request, Object.class);
-
-			return new ObjectMapper().readTree(
-					new ObjectMapper().writeValueAsBytes(samlResp));
-			
-		} catch (Exception ex) {
-			ex.printStackTrace();
-
-		}
-		return null;
-	}
+//		try {
+//			HttpHeaders headers = new HttpHeaders();
+//			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//			headers.add("Authorization", "Basic " + token);
+//			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
+//			
+//			HttpEntity<String> request = new HttpEntity<>("CastleAuthorization=Basic%20" + token, headers);
+//			
+//			ResponseEntity<Object> samlResp = new RestTemplate()
+//					.exchange(url, 
+//					HttpMethod.POST,
+//					request, Object.class);
+//
+//			return new ObjectMapper().readTree(
+//					new ObjectMapper().writeValueAsBytes(samlResp));
+//			
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//
+//		}
+//		return null;
+//	}
 
 	/*********************************************************************
 	 * 
@@ -250,6 +264,10 @@ public class VsphereClient {
 		return new VirtualMachinePoolImpl(this);
 	}
 	
+	public OkHttpClient getHttpClient() {
+		return httpClient;
+	}
+
 	public VirtualMachineNetworkImpl virtualMachineNetworks() {
 		return new VirtualMachineNetworkImpl(this);
 	}

@@ -3,19 +3,15 @@
  */
 package com.github.kubesys.vsphere.impls;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kubesys.vsphere.VsphereClient;
+
+import okhttp3.Headers;
+import okhttp3.Request;
 
 /**
  * wuheng@otcaix.iscas.ac.cn
@@ -33,72 +29,87 @@ public abstract class AbstractImpl {
 		this.client = client;
 	}
 
-	protected HttpHeaders getDefHttpHeaders() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Accept", "application/json");
-		headers.add("Content-Type", "application/json");
-		if (client.getSession() != null) {
-			headers.add("Cookie", "vmware-api-session-id=" + client.getSession());
-		}
-		return headers;
-	}
+//	protected HttpHeaders getDefHttpHeaders() throws Exception {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Accept", "application/json");
+//		headers.add("Content-Type", "application/json");
+//		if (client.getSession() != null) {
+//			headers.add("Cookie", "vmware-api-session-id=" + client.getSession());
+//		}
+//		return headers;
+//	}
+//
+//	protected HttpHeaders getUIHttpHeaders(String jsessionId) throws Exception {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Accept", "application/json");
+//		if (client.getSession() != null) {
+//			if (VsphereClient.VERSION.equals("6.7")) {
+//				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
+//			} else if (VsphereClient.VERSION.equals("6.5")) {
+//				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";JSESSIONID=" + jsessionId);
+//			}
+//		}
+//		return headers;
+//	}
 
-	protected HttpHeaders getUIHttpHeaders(String jsessionId) throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Accept", "application/json");
-		if (client.getSession() != null) {
-			if (VsphereClient.VERSION.equals("6.7")) {
-				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";VSPHERE-UI-JSESSIONID=" + jsessionId);
-			} else if (VsphereClient.VERSION.equals("6.5")) {
-				headers.add("Cookie", "VSPHERE-USERNAME=" + client.getUsername() + ";JSESSIONID=" + jsessionId);
-			}
-//			headers.add("X-VSPHERE-UI-XSRF-TOKEN", "516494cd-ac4c-4588-9daa-4de88c9ec148");
-		}
-		return headers;
+	protected Headers getDefHeaders() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("Content-Type", "application/json");
+		map.put("Cookie", "vmware-api-session-id=" + client.getSession());
+		return Headers.of(map);
 	}
-
-	
 
 	protected JsonNode list(String url) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getDefHeaders())
+				.method("GET", null)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 
+
 	protected JsonNode post(String url) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, HttpMethod.POST, getReq, JsonNode.class).getBody();
+//		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
+//		return new RestTemplate().exchange(url, HttpMethod.POST, getReq, JsonNode.class).getBody();
+		return null;
 	}
 
 	protected JsonNode remove(String url) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-		return new RestTemplate().exchange(url, HttpMethod.DELETE, getReq, JsonNode.class).getBody();
+//		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
+//		return new RestTemplate().exchange(url, HttpMethod.DELETE, getReq, JsonNode.class).getBody();
+		return null;
 	}
 
 	protected JsonNode patch(String url, String body) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>(body, getDefHttpHeaders());
-		CloseableHttpClient httpClient = HttpClientBuilder.create()
-				.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-		return restTemplate.exchange(url, HttpMethod.PATCH, getReq, JsonNode.class).getBody();
+//		HttpEntity<String> getReq = new HttpEntity<>(body, getDefHttpHeaders());
+//		CloseableHttpClient httpClient = HttpClientBuilder.create()
+//				.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+//				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
+//		RestTemplate restTemplate = new RestTemplate();
+//		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
+//		return restTemplate.exchange(url, HttpMethod.PATCH, getReq, JsonNode.class).getBody();
+		return null;
 	}
 	
 
 	protected JsonNode list(String url, String jsessionId) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
-		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
+//		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
+//		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
+		return null;
 	}
 
 	protected JsonNode post(String url, String body, String jsessionId) throws Exception {
-		HttpEntity<String> postReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
-		return new RestTemplate().exchange(url, HttpMethod.POST, postReq, JsonNode.class).getBody();
+//		HttpEntity<String> postReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
+//		return new RestTemplate().exchange(url, HttpMethod.POST, postReq, JsonNode.class).getBody();
+		return null;
 	}
 
 	protected JsonNode get(String url, String jsessionId) throws Exception {
-		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
-		System.out.println(url);
-		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
+//		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
+//		System.out.println(url);
+//		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
+		return null;
 	}
 
 	public String searchRealname(String name, String type, String jsessionId) {

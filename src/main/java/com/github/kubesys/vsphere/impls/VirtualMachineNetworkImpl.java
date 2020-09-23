@@ -40,10 +40,6 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode createL3(String dc, String uuid, String name) {
-		return createL3(dc, uuid, name, client.getUIJessionId());
-	}
-	
 	public JsonNode createL3(String dc, String uuid, String name, String jsessionId) {
 		String fullUrl = this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.h5.network.dvs.create.model.DvsCreateWizardMutationSpec";
 		try {

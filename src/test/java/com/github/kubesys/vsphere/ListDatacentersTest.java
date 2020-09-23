@@ -6,7 +6,7 @@ package com.github.kubesys.vsphere;
 public class ListDatacentersTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().listDataCenters());
+		System.out.println(getClient().virtualMachinePools().listDataCenters());
 	}
 }
 

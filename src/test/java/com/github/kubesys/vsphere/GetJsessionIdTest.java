@@ -6,7 +6,7 @@ package com.github.kubesys.vsphere;
 public class GetJsessionIdTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.getUIJessionId());
+//		System.out.println(client.getUIJessionId());
 	}
 }
 

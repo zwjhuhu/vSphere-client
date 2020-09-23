@@ -6,7 +6,7 @@ package com.github.kubesys.vsphere;
 public class ListClustersTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().listClusters());
+		System.out.println(getClient().virtualMachinePools().listClusters());
 	}
 }
 

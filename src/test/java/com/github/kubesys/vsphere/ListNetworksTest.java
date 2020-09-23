@@ -6,7 +6,7 @@ package com.github.kubesys.vsphere;
 public class ListNetworksTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().listNetworks());
+		System.out.println(getClient().virtualMachinePools().listNetworks());
 	}
 }
 
