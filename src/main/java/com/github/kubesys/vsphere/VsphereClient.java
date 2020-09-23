@@ -3,6 +3,12 @@
  */
 package com.github.kubesys.vsphere;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -15,7 +21,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kubesys.vsphere.impls.VirtualMachineImpl;
@@ -45,7 +50,7 @@ public class VsphereClient {
 	
 	private final String password;
 	
-	public static String VERSION;
+	private final String version;
 	
 	
 	
@@ -73,37 +78,18 @@ public class VsphereClient {
 		this.url = protocol + "://" + (port <= 0 ? ip : ip + ":" + port);
 		this.username = username;
 		this.password = password;
-		VERSION = version;
+		this.version = version;
 		this.httpClient = createHttpClient();
-		
-		Request request = createPostRequest(this.url + 
-				"/rest/com/vmware/cis/session", "text/plain", "");
-		
-		Response resp = httpClient.newCall(request).execute();
-		this.session = new ObjectMapper().readTree(resp.body().byteStream()).get("value").asText();
+		this.session = new ObjectMapper().readTree(
+				simpleLogin(username, password).body().byteStream()).get("value").asText();
 	}
-
 
 	/*******************************************************
 	 * 
 	 *
-	 *               Create
+	 *               Init
 	 * 
 	 ********************************************************/
-	
-	protected Request createPostRequest(String url, String type, String body) {
-		return new Request.Builder()
-		  .url(url)
-		  .addHeader("Authorization", "Basic " + getBase64Creds(username, password))
-		  .method("POST", createPostBody(type, body))
-		  .build();
-	}
-	
-	@SuppressWarnings("deprecation")
-	protected RequestBody createPostBody(String type, String obj) {
-		MediaType mediaType = MediaType.parse(type);
-		return RequestBody.create(mediaType, obj);
-	}
 
 	protected OkHttpClient createHttpClient() throws Exception {
 		X509TrustManager initTrustManager = initTrustManager();
@@ -176,26 +162,27 @@ public class VsphereClient {
 		};
 	}
 	
-	@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-	public static class Session {
-		@JsonProperty("value")
-		private String value;
+	/*******************************************************
+	 * 
+	 *
+	 *               Login
+	 * 
+	 ********************************************************/
+	
+	@SuppressWarnings("deprecation")
+	protected Response simpleLogin(String username, String password) throws IOException {
+		MediaType mediaType = MediaType.parse("text/plain");
+		RequestBody body =  RequestBody.create(mediaType, "");
 		
-
-		public String getValue() {
-			return value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
+		Request request = new Request.Builder()
+				  .url(this.url + "/rest/com/vmware/cis/session")
+				  .addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				  .method("POST", body)
+				  .build();
+		
+		return httpClient.newCall(request).execute();
 	}
-	
-	public static String getBase64Creds(String username, String password) {
-		String authString = username + ":" + password;
-		return new BASE64Encoder().encode(authString.getBytes());
-	}
-	
+
 
 	/**
 	 * 
@@ -216,6 +203,52 @@ public class VsphereClient {
 			
 	}
 	
+	@SuppressWarnings("deprecation")
+	public Response saml2Url(String url, String cookie) throws Exception {
+
+		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+		RequestBody body = RequestBody.create(mediaType, "CastleAuthorization=Basic "
+							+ getBase64Creds(username, password));
+		
+		Request request = new Request.Builder()
+				.url(url)
+				.addHeader("Cookie", cookie)
+				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				.method("POST", body)
+				.build();
+				
+		return httpClient.newCall(request).execute();
+			
+	}
+	
+	@SuppressWarnings("deprecation")
+	public Response webssoUrl(String cookie, String parameter) throws Exception {
+
+		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+		RequestBody body = RequestBody.create(mediaType, "SAMLResponse=" + parameter);
+		
+		Request request = new Request.Builder()
+				.url(this.url + "/ui/saml/websso/sso")
+				.addHeader("Cookie", cookie)
+				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				.method("POST", body)
+				.build();
+				
+		return httpClient.newCall(request).execute();
+			
+	}
+	
+	/*******************************************************
+	 * 
+	 *
+	 *               Utils
+	 * 
+	 ********************************************************/
+	public static String getBase64Creds(String username, String password) {
+		String authString = username + ":" + password;
+		return new BASE64Encoder().encode(authString.getBytes());
+	}
+	
 	public String getKeyInHeader(String key, JsonNode json) {
 		int size = json.size();
 		for (int i = 0; i < size; i++) {
@@ -226,32 +259,28 @@ public class VsphereClient {
 		}
 		return null;
 	}
-//	
-//	public JsonNode samlUrl(String url, String token) {
-//
-//		try {
-//			HttpHeaders headers = new HttpHeaders();
-//			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//			headers.add("Authorization", "Basic " + token);
-//			headers.add("Cookie", "VSPHERE-UI-JSESSIONID=D54653702ED4D25AAC213D7E2DA9EEC0");
-//			
-//			HttpEntity<String> request = new HttpEntity<>("CastleAuthorization=Basic%20" + token, headers);
-//			
-//			ResponseEntity<Object> samlResp = new RestTemplate()
-//					.exchange(url, 
-//					HttpMethod.POST,
-//					request, Object.class);
-//
-//			return new ObjectMapper().readTree(
-//					new ObjectMapper().writeValueAsBytes(samlResp));
-//			
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//
-//		}
-//		return null;
-//	}
 
+	public String getSAMLResponse(InputStream is) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		
+		String value = sb.toString();
+		int sIdx = value.indexOf("value=\"");
+		int mIdx = value.indexOf("<input type=\"submit\"");
+		int eIdx = value.substring(0, mIdx).lastIndexOf("\"");
+		return value.substring(sIdx + 7, eIdx);
+	}
+
+	public String urlEncode(String value) throws Exception {
+		return URLEncoder.encode(value, "utf-8");
+	}
+	
 	/*********************************************************************
 	 * 
 	 * 
@@ -285,8 +314,6 @@ public class VsphereClient {
 	 * 
 	 *******************************************************************/
 	
-	
-	
 	public String getSession() {
 		return session;
 	}
@@ -303,4 +330,8 @@ public class VsphereClient {
 		return password;
 	}
 
+	public String getVersion() {
+		return version;
+	}
+	
 }

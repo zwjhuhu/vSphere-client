@@ -8,7 +8,10 @@ public class VsphereClientTest {
 	public static VsphereClient client;
 
 	public static VsphereClient getClient() throws Exception {
-		return new VsphereClient("https", "133.133.135.35", 443, "administrator@vsphere.test", "Onceas2020!234", "6.7");
+		if (client == null) {
+			client = new VsphereClient("https", "133.133.135.35", 443, "administrator@vsphere.test", "Onceas2020!234", "6.7");
+		}
+		return client;
 	}
 
 }
