@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kubesys.vsphere.VsphereClient;
 
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * wuheng@otcaix.iscas.ac.cn
@@ -78,10 +80,17 @@ public abstract class AbstractImpl {
 	}
 	
 
-	protected JsonNode post(String url) throws Exception {
-//		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-//		return new RestTemplate().exchange(url, HttpMethod.POST, getReq, JsonNode.class).getBody();
-		return null;
+	@SuppressWarnings("deprecation")
+	protected JsonNode postWithoutCookie(String url) throws Exception {
+		
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, "");
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getDefHeaders())
+				.method("POST", body)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 
 	protected JsonNode remove(String url) throws Exception {

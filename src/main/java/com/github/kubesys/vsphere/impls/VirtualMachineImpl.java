@@ -107,7 +107,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public boolean start(String vm) {
 		try {
-			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/start");
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/start");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,7 +117,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public boolean stop(String vm) {
 		try {
-			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/stop");
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/stop");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,7 +127,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public boolean suspend(String vm) {
 		try {
-			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/suspend");
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/suspend");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -137,7 +137,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public boolean reset(String vm) {
 		try {
-			post(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/reset");
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/power/reset");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -147,7 +147,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public boolean shutdown(String vm) {
 		try {
-			post(this.client.getUrl() + "/vcenter/vm/" + vm + "/guest/power?action=shutdown");
+			postWithoutCookie(this.client.getUrl() + "/vcenter/vm/" + vm + "/guest/power?action=shutdown");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
