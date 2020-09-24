@@ -59,7 +59,7 @@ public abstract class AbstractImpl {
 		return Headers.of(map);
 	}
 
-	protected JsonNode list(String url) throws Exception {
+	protected JsonNode listWithoutCookie(String url) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
 				.headers(getDefHeaders())
@@ -67,7 +67,16 @@ public abstract class AbstractImpl {
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
-
+	
+	protected JsonNode getWithoutCookie(String url) throws Exception {
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getDefHeaders())
+				.method("GET", null)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+	}
+	
 
 	protected JsonNode post(String url) throws Exception {
 //		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());

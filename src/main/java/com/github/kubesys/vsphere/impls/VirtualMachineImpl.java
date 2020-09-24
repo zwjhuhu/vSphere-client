@@ -18,7 +18,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public JsonNode getVMInfo(String vm) {
 		try {
-			return list(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -98,7 +98,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public JsonNode getImageInfo(String vm) {
 		try {
-			return list(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

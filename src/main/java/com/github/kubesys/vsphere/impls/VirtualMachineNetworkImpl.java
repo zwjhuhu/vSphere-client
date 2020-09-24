@@ -33,7 +33,7 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 	
 	public JsonNode listNetworks() throws Exception {
 		try {
-			return list(this.client.getUrl() + "/rest/vcenter/network");
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/network");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
