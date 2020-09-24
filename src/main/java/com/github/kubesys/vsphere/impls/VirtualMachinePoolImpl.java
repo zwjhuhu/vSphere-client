@@ -166,11 +166,51 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	/******************************************************************************
+	 * 
+	 * 
+	 *                          Info
+	 * 
+	 * 
+	 ******************************************************************************/
 	public JsonNode getClusterInfo(String cluster, String cookie) {
 		try {
 			String id = search(cluster, "Cluster", cookie)
 									.get("id").asText();
 			return info(id, "com.vmware.vsphere.client.cluster.model.ClusterSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getDataCenterInfo(String datacenter, String cookie) {
+		try {
+			String id = search(datacenter, "Datacenter", cookie)
+									.get("id").asText();
+			return info(id, "com.vmware.vsphere.client.datacenter.model.DatacenterSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getDataStoreInfo(String datastore, String cookie) {
+		try {
+			String id = search(datastore, "Datastore", cookie)
+									.get("id").asText();
+			return info(id, "com.vmware.vsphere.client.h5.storage.model.DatastoreSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getResourcePoolInfo(String pool, String cookie) {
+		try {
+			String id = search(pool, "Resource Pool", cookie)
+									.get("id").asText();
+			return info(id, "com.vmware.vsphere.client.rp.model.ResourcePoolSummaryData", cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
