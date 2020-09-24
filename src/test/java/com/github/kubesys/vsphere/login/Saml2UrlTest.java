@@ -20,8 +20,6 @@ public class Saml2UrlTest extends VsphereClientTest {
 		System.out.println(resp.header("Set-Cookie"));
 		System.out.println(
 				httpClient.getSAMLResponse(resp.body().byteStream()));
-		
-		
 	}
 }
 

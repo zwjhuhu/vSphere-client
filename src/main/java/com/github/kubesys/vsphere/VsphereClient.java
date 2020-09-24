@@ -223,11 +223,11 @@ public class VsphereClient {
 	@SuppressWarnings("deprecation")
 	public Response webssoUrl(String cookie, String parameter) throws Exception {
 
-		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "SAMLResponse=" + URLEncoder.encode(parameter));
+		MediaType mediaType = MediaType.parse("text/plain");
+		RequestBody body = RequestBody.create(mediaType, "");
 		
 		Request request = new Request.Builder()
-				.url(this.url + "/ui/saml/websso/sso")
+				.url(this.url + "/ui/saml/websso/sso?SAMLResponse=" + URLEncoder.encode(parameter, "utf-8"))
 				.addHeader("Cookie", cookie)
 				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
 				.method("POST", body)
@@ -276,6 +276,34 @@ public class VsphereClient {
 		return value.substring(sIdx + 7, eIdx);
 	}
 
+	public String getCookie() throws Exception {
+		StringBuilder sb = new StringBuilder();
+		JsonNode jsonNode = loginUrl();
+		String cookie1 = getKeyInHeader("Set-Cookie", jsonNode);
+		sb.append(getRealCookie(cookie1)).append("; ");
+		Response resp = saml2Url(getKeyInHeader("Location", jsonNode), cookie1);
+		String cookie2 = resp.header("Set-Cookie");
+		sb.append(getRealCookie(cookie2)).append("; ");
+		Response webssoUrl = webssoUrl(cookie2,
+				getSAMLResponse(resp.body().byteStream()));
+		JsonNode json = new ObjectMapper().readTree(new ObjectMapper().writeValueAsString(webssoUrl.headers()));
+		
+		int size = json.size();
+		for (int i = 0; i < size; i++) {
+			JsonNode item = json.get(i);
+			if (item.get("first").asText().equals("Set-Cookie")) {
+				sb.append(getRealCookie(item.get("second").asText())).append("; ");
+			}
+		}
+		
+		return sb.substring(0, sb.length() - 2).toString();
+	}
+
+	public String getRealCookie(String cookie) {
+		int idx = cookie.indexOf(";");
+		return cookie.substring(0, idx);
+	}
+	
 	/*********************************************************************
 	 * 
 	 * 
