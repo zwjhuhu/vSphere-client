@@ -6,6 +6,8 @@ package com.github.kubesys.vsphere.impls;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kubesys.vsphere.VsphereClient;
 
+import okhttp3.OkHttpClient;
+
 /**
  * wuheng@otcaix.iscas.ac.cn
  *
@@ -85,9 +87,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode listVMTemplates() throws Exception {
+	static String LIST_VM_TEMPLATE = "{\"constraintObjectId\":\"DATACENTER\",\"queryFilterId\":\"relatedItemsListFilterId\",\"filterParams\":[\"vmTemplatesForDatacenter\"],\"requestedProperties\":[\"id\",\"primaryIconId\",\"name\",\"labelIds\",\"provisionedSpace.@formatted\",\"config/guestFullName\",\"hwVersion.@formatted\",\"summary.config.memorySizeMB.@formatted\"],\"dataModels\":[\"VirtualMachine\"],\"take\":100,\"skip\":0,\"sort\":[{\"field\":\"name\",\"dir\":\"desc\"}],\"listViewId\":\"vsphere.core.template.list\",\"isLiveRefreshRequest\":false}";
+	
+	public JsonNode listVMTemplates(String datacenter, String cookie) throws Exception {
 		try {
-			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm_template/library-items");
+			String id = search(datacenter, "Datacenter", cookie)
+									.get("id").asText();
+			OkHttpClient newClient = client.createHttpClient(true);
+			return postWithCookie(newClient, "https://133.133.135.35/ui/list/ex", 
+								LIST_VM_TEMPLATE.replace("DATACENTER", id), cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -104,9 +112,9 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	}
 	
 	// https://133.133.135.35/ui/events/?requestedPage=0
-	public JsonNode listEvents(String jsessionId) throws Exception {
+	public JsonNode listEvents(int page, String cookie) throws Exception {
 		try {
-			return listWithCookie(this.client.getUrl() + "/ui/events", jsessionId);
+			return listWithCookie(this.client.getUrl() + "/ui/events/?requestedPage=" + page, cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -128,6 +136,7 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		}
 		return null;
 	}
+	
 	
 	public JsonNode getDataStore(String name) throws Exception {
 		try {

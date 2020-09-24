@@ -3,6 +3,9 @@
  */
 package com.github.kubesys.vsphere.impls;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +15,7 @@ import com.github.kubesys.vsphere.VsphereClient;
 
 import okhttp3.Headers;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -63,16 +67,54 @@ public abstract class AbstractImpl {
 	
 
 	@SuppressWarnings("deprecation")
-	protected JsonNode postWithoutCookie(String url) throws Exception {
+	protected JsonNode postWithoutCookie(String url, String str) throws Exception {
 		
 		MediaType mediaType = MediaType.parse("application/json");
-		RequestBody body = RequestBody.create(mediaType, "");
+		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
 				.headers(getHeaders(null))
 				.method("POST", body)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected JsonNode postWithCookie(String url, String str, String cookie) throws Exception {
+		
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, str);
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getHeaders(cookie))
+				.method("POST", body)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+	}
+	
+	@SuppressWarnings("deprecation")
+	protected JsonNode postWithCookie(OkHttpClient newClient, String url, String str, String cookie) throws Exception {
+		
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, str);
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getHeaders(cookie))
+				.method("POST", body)
+				.build();
+		
+		InputStream byteStream = newClient.newCall(request).execute().body().byteStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(byteStream));
+		
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		
+		while ((line = br.readLine()) != null) {
+			sb.append(line);
+		}
+		
+		System.out.println(sb);
+		return new ObjectMapper().readTree(byteStream);
 	}
 
 	protected JsonNode remove(String url) throws Exception {

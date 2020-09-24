@@ -8,6 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class GetTemplateInfoTest extends VsphereClientTest {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().search("ooo", "虚拟机模板", "6644BA4503B13E67275CC04540A6FF43"));
+		String cookie = "CastleSessionvsphere.test=_694ee092d1ab53947605a249407c1214; VSPHERE-UI-JSESSIONID=A7D77E05F8CC79FFC1BC6201122C35B4; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_13f93775b9dded9784bc2c36a40a4bdb";
+		System.out.println(getClient().virtualMachines().getVMTemplateInfo("ooo", cookie));
 	}
 }

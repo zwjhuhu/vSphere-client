@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class GetDatacenterInfoTest extends VsphereClientTest {
 
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_92d7f5a58c4f032fbb43f69d58cd55d5; VSPHERE-UI-JSESSIONID=E2823677DD028ECDB3139AC7510A91FB; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_4419896e678585cb49c02fba2c9c57c2";
+		String cookie = "CastleSessionvsphere.test=_cf2d842754d024b850d1995b2ad5e24c; VSPHERE-UI-JSESSIONID=8FBA6F5761433E9EE20F3F64ACE89FB0; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_c891fb42085d99e66e4c8fe5039d84ab";
 		System.out.println(getClient().virtualMachinePools().getDataCenterInfo("Datacenter", cookie));
 	}
 }

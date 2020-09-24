@@ -78,7 +78,7 @@ public class VsphereClient {
 		this.username = username;
 		this.password = password;
 		this.version = version;
-		this.httpClient = createHttpClient();
+		this.httpClient = createHttpClient(false);
 		this.session = new ObjectMapper().readTree(
 				simpleLogin(username, password).body().byteStream()).get("value").asText();
 	}
@@ -90,13 +90,13 @@ public class VsphereClient {
 	 * 
 	 ********************************************************/
 
-	protected OkHttpClient createHttpClient() throws Exception {
+	public OkHttpClient createHttpClient(boolean redirect) throws Exception {
 		X509TrustManager initTrustManager = initTrustManager();
 		return new OkHttpClient.Builder()
 				.sslSocketFactory(initSslSocketFactory(
     							initTrustManager), initTrustManager)
 				.hostnameVerifier(initHostnameVerifier())
-				.followRedirects(false)
+				.followRedirects(redirect)
 				.build();
 	}
 
