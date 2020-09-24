@@ -152,12 +152,12 @@ public abstract class AbstractImpl {
 		return null;
 	}
 	
-	public JsonNode search(String name, String type, String jsessionId) {
+	public JsonNode search(String name, String type, String cookie) {
 
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
 
-			JsonNode objects = listWithCookie(clusterIdUrl, jsessionId);
+			JsonNode objects = listWithCookie(clusterIdUrl, cookie);
 
 			int objList = objects.size();
 
