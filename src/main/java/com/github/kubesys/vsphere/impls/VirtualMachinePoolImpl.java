@@ -149,7 +149,7 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	
 	public JsonNode listResourcePools(String datacenterid) throws Exception {
 		try {
-			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool??filter.datacenters=" + datacenterid);
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool?filter.datacenters=" + datacenterid);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
