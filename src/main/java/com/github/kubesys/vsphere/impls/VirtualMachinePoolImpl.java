@@ -68,6 +68,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listNetworks(String datacenterid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/network?filter.datacenters=" + datacenterid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listClusters() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/cluster");
@@ -89,6 +98,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	public JsonNode listHosts() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/host");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listHosts(String datacenterid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/host?filter.datacenters=" + datacenterid);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -123,6 +141,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	public JsonNode listResourcePools() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listResourcePools(String datacenterid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool??filter.datacenters=" + datacenterid);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
