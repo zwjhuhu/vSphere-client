@@ -1,4 +1,4 @@
-package com.github.kubesys.vsphere.login;
+package com.github.kubesys.vsphere.info;
 
 import com.github.kubesys.vsphere.VsphereClientTest;
 

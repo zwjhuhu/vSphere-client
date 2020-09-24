@@ -280,7 +280,6 @@ public class VsphereClient {
 		StringBuilder sb = new StringBuilder();
 		JsonNode jsonNode = loginUrl();
 		String cookie1 = getKeyInHeader("Set-Cookie", jsonNode);
-		sb.append(getRealCookie(cookie1)).append("; ");
 		Response resp = saml2Url(getKeyInHeader("Location", jsonNode), cookie1);
 		String cookie2 = resp.header("Set-Cookie");
 		sb.append(getRealCookie(cookie2)).append("; ");

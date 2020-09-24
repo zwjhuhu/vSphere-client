@@ -106,7 +106,7 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	// https://133.133.135.35/ui/events/?requestedPage=0
 	public JsonNode listEvents(String jsessionId) throws Exception {
 		try {
-			return list(this.client.getUrl() + "/ui/events", jsessionId);
+			return listWithCookie(this.client.getUrl() + "/ui/events", jsessionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -171,11 +171,11 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + cluster;
 			
-			JsonNode list = list(clusterIdUrl, cookie);
+			JsonNode list = listWithCookie(clusterIdUrl, cookie);
 			String id = list.get(0).get("results").get(0).get("id").asText();
 			
 			String clusterInfoUrl = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
-			return list(clusterInfoUrl, cookie);
+			return listWithCookie(clusterInfoUrl, cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
