@@ -170,8 +170,7 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		try {
 			String id = search(cluster, "Cluster", cookie)
 									.get("id").asText();
-			String clusterInfoUrl = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.cluster.model.ClusterSummaryData";
-			return listWithCookie(clusterInfoUrl, cookie);
+			return info(id, "com.vmware.vsphere.client.cluster.model.ClusterSummaryData", cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

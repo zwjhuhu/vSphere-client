@@ -25,6 +25,17 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode getVMInfo(String vm, String cookie) {
+		try {
+			String id = search(vm, "Virtual Machine", cookie)
+									.get("id").asText();
+			return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	
 	static String CLONE = "{\r\n" + 
 			"	\"vm\": {\r\n" + 

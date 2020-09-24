@@ -152,6 +152,11 @@ public abstract class AbstractImpl {
 		return null;
 	}
 	
+	public JsonNode info(String id, String model, String cookie) throws Exception {
+		return listWithCookie(this.client.getUrl() + "/ui/data/" 
+							+ id + "?model=" + model, cookie);
+	}
+	
 	public JsonNode search(String name, String type, String cookie) {
 
 		try {
