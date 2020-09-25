@@ -68,6 +68,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listFoldersInParent(String folderid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/folder?filter.parent_folders=" + folderid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listNetworks() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/network");

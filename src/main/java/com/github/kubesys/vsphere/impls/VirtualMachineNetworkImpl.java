@@ -3,6 +3,9 @@
  */
 package com.github.kubesys.vsphere.impls;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kubesys.vsphere.VsphereClient;
 
@@ -40,26 +43,32 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode createL3(String dc, String uuid, String name, String jsessionId) {
-//		String fullUrl = this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.h5.network.dvs.create.model.DvsCreateWizardMutationSpec";
-//		try {
-//			return post(fullUrl, L3.replace("DCNAME", dc)
-//									.replace("UUID", uuid)
-//									.replace("NAME", name), jsessionId);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+	public JsonNode createDvs(String datacenter, String name, String cookie) {
+		
+		JsonNode json = client.virtualMachinePools().getDataCenterInfo(datacenter, cookie);
+		
+		String dc = json.get("provider").get("value").asText();
+		String uuid = json.get("provider").get("serverGuid").asText();
+		
+		String fullUrl = this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.h5.network.dvs.create.model.DvsCreateWizardMutationSpec";
+		try {
+			return postWithCookie(fullUrl, L3.replace("DCNAME", dc)
+									.replace("UUID", uuid)
+									.replace("NAME", name), cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
-	public JsonNode deleteL3(String name, String jsessionId) {
-//		String fullUrl = this.client.getUrl() + "/ui/data/properties/ID?properties=name";
-//		String id = searchRealname(name, "Distributed Switch", jsessionId);
-//		try {
-//			return get(fullUrl.replace("ID", id), jsessionId);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+	public JsonNode deleteDvs(String name, String cookie) throws Exception {
+		String id = searchRealname(name, "Distributed Switch", cookie);
+		String fullUrl = this.client.getUrl() + "/ui/mutation/remove/" + URLEncoder.encode(id, "utf-8");
+		try {
+			return postWithCookie(fullUrl.replace("ID", id), "", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 }

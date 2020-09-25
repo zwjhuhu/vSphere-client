@@ -117,6 +117,7 @@ public abstract class AbstractImpl {
 		return new ObjectMapper().readTree(byteStream);
 	}
 
+	@SuppressWarnings("deprecation")
 	protected JsonNode removeWithoutCookie(String url, String str) throws Exception {
 		
 		MediaType mediaType = MediaType.parse("application/json");
@@ -140,7 +141,6 @@ public abstract class AbstractImpl {
 		return null;
 	}
 	
-
 	protected JsonNode listWithCookie(String url, String cookie) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
@@ -152,12 +152,12 @@ public abstract class AbstractImpl {
 
 	}
 
-	public String searchRealname(String name, String type, String jsessionId) {
+	public String searchRealname(String name, String type, String cookie) {
 
 		try {
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
 
-			JsonNode objects = listWithCookie(clusterIdUrl, jsessionId);
+			JsonNode objects = listWithCookie(clusterIdUrl, cookie);
 
 			int objList = objects.size();
 
