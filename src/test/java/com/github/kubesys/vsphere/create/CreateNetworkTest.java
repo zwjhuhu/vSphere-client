@@ -1,9 +1,11 @@
-package com.github.kubesys.vsphere;
+package com.github.kubesys.vsphere.create;
+
+import com.github.kubesys.vsphere.VsphereClientTest;
 
 /**
  * Unit test for simple App.
  */
-public class CreateVMFromTemplateTest extends VsphereClientTest {
+public class CreateNetworkTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
 		System.out.println(client.virtualMachines().createFromTemplate("henry", "vm-43", "group-v3", 

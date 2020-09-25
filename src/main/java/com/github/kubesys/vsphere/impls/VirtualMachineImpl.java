@@ -103,18 +103,18 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public JsonNode createFromTemplate(String name, String template, String folder, String datastore, String pool, String uuid, String jsessionId) {
 		
-		try {
-			String JSON = CLONE.replace("VMNAME", name)
-							.replace("TEMPLATENAME", template)
-							.replace("FOLDERNAME", folder)
-							.replace("POOLNAME", pool)
-							.replaceAll("DATASTORENAME", datastore)
-							.replaceAll("UUID", uuid);
-			System.out.println(JSON);
-			return post(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, jsessionId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			String JSON = CLONE.replace("VMNAME", name)
+//							.replace("TEMPLATENAME", template)
+//							.replace("FOLDERNAME", folder)
+//							.replace("POOLNAME", pool)
+//							.replaceAll("DATASTORENAME", datastore)
+//							.replaceAll("UUID", uuid);
+//			System.out.println(JSON);
+//			return post(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, jsessionId);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		return null;
 	}
 	
@@ -182,9 +182,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return false;
 	}
 	
-	public boolean delete(String vm) {
+	public boolean delete(String vmid) {
 		try {
-			remove(this.client.getUrl() + "/rest/vcenter/vm/" + vm);
+			removeWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid, "");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

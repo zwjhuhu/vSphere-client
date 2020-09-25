@@ -117,10 +117,16 @@ public abstract class AbstractImpl {
 		return new ObjectMapper().readTree(byteStream);
 	}
 
-	protected JsonNode remove(String url) throws Exception {
-//		HttpEntity<String> getReq = new HttpEntity<>("", getDefHttpHeaders());
-//		return new RestTemplate().exchange(url, HttpMethod.DELETE, getReq, JsonNode.class).getBody();
-		return null;
+	protected JsonNode removeWithoutCookie(String url, String str) throws Exception {
+		
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, str);
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getHeaders(null))
+				.method("DELETE", body)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 
 	protected JsonNode patch(String url, String body) throws Exception {
@@ -144,19 +150,6 @@ public abstract class AbstractImpl {
 		ResponseBody body = client.getHttpClient().newCall(request).execute().body();
 		return new ObjectMapper().readTree(body.byteStream());
 
-	}
-
-	protected JsonNode post(String url, String body, String jsessionId) throws Exception {
-//		HttpEntity<String> postReq = new HttpEntity<>(body, getUIHttpHeaders(jsessionId));
-//		return new RestTemplate().exchange(url, HttpMethod.POST, postReq, JsonNode.class).getBody();
-		return null;
-	}
-
-	protected JsonNode get(String url, String jsessionId) throws Exception {
-//		HttpEntity<String> getReq = new HttpEntity<>("", getUIHttpHeaders(jsessionId));
-//		System.out.println(url);
-//		return new RestTemplate().exchange(url, HttpMethod.GET, getReq, JsonNode.class).getBody();
-		return null;
 	}
 
 	public String searchRealname(String name, String type, String jsessionId) {
