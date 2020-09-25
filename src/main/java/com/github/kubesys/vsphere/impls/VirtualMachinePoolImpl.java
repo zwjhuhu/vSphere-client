@@ -104,6 +104,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listHostsInCluster(String clusterId) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/host?filter.clusters=" + clusterId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listHosts(String datacenterid) throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/host?filter.datacenters=" + datacenterid);
@@ -117,6 +126,24 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	public JsonNode listVMs() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listVMsInCluster(String clusterId) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm?filter.clusters=" + clusterId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listVMsInHost(String hostId) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm?filter.hosts=" + hostId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
