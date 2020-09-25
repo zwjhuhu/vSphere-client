@@ -59,6 +59,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listFoldersInDatacenter(String datacenterid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/folder?filter.datacenters=" + datacenterid);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listNetworks() throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/network");
