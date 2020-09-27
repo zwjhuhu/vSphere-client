@@ -192,6 +192,15 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listResourcePoolsInPool(String poolId) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool?filter.parent_resource_pools=" + poolId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listResourcePools(String datacenterid) throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/resource-pool?filter.datacenters=" + datacenterid);
