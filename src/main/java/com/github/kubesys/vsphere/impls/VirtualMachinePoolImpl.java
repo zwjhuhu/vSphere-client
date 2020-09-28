@@ -324,5 +324,16 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		}
 		return null;
 	}
+	
+	public JsonNode getHostInfo(String host, String cookie) {
+		try {
+			String id = search(host, "Host", cookie)
+									.get("id").asText();
+			return info(id, "com.vmware.vsphere.client.h5.host.model.HostSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

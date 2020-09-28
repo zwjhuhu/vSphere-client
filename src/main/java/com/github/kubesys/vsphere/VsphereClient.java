@@ -194,6 +194,7 @@ public class VsphereClient {
 		Request request = new Request.Builder()
 				.url(this.url + "/ui/login")
 				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				.addHeader("VSPHERE-UI-XSRF-TOKEN", "458d92d0-3d10-4042-aca2-6cc161a52a33")
 				.method("GET", null)
 				.build();
 				
