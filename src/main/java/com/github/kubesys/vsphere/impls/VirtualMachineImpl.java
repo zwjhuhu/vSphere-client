@@ -192,6 +192,20 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return false;
 	}
 	
+	// https://133.133.135.35/ui/events/?requestedPage=0
+		public JsonNode listVMEvents(String vm, String cookie) throws Exception {
+			try {
+				String id = search(vm, "Virtual Machine", cookie)
+						.get("id").asText();
+				return listWithCookie(this.client.getUrl() + "/ui/events/?"
+						+ "objectId=" + id, cookie);
+//						+ "requestedPage=" + page, cookie);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	
 	static String CPU = "{\r\n" + 
 			"	\"spec\": {\r\n" + 
 			"		\"cores_per_socket\": 1,\r\n" + 
