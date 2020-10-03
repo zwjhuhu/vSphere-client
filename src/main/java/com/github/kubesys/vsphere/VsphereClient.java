@@ -194,7 +194,6 @@ public class VsphereClient {
 		Request request = new Request.Builder()
 				.url(this.url + "/ui/login")
 				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
-				.addHeader("VSPHERE-UI-XSRF-TOKEN", "458d92d0-3d10-4042-aca2-6cc161a52a33")
 				.method("GET", null)
 				.build();
 				
@@ -235,6 +234,20 @@ public class VsphereClient {
 				.build();
 				
 		return httpClient.newCall(request).execute();
+			
+	}
+	
+	public JsonNode uiUrl(String cookie) throws Exception {
+
+		Request request = new Request.Builder()
+				.url(this.url + "/ui/")
+				.addHeader("Authorization", "Basic " + getBase64Creds(username, password))
+				.addHeader("Cookie", cookie)
+				.method("GET", null)
+				.build();
+				
+		return new ObjectMapper().readTree(new ObjectMapper().writeValueAsBytes(
+						httpClient.newCall(request).execute().headers()));
 			
 	}
 	
@@ -279,11 +292,14 @@ public class VsphereClient {
 
 	public String getCookie() throws Exception {
 		StringBuilder sb = new StringBuilder();
+		
 		JsonNode jsonNode = loginUrl();
 		String cookie1 = getKeyInHeader("Set-Cookie", jsonNode);
 		Response resp = saml2Url(getKeyInHeader("Location", jsonNode), cookie1);
+		
 		String cookie2 = resp.header("Set-Cookie");
 		sb.append(getRealCookie(cookie2)).append("; ");
+		
 		Response webssoUrl = webssoUrl(cookie2,
 				getSAMLResponse(resp.body().byteStream()));
 		JsonNode json = new ObjectMapper().readTree(new ObjectMapper().writeValueAsString(webssoUrl.headers()));
@@ -295,7 +311,7 @@ public class VsphereClient {
 				sb.append(getRealCookie(item.get("second").asText())).append("; ");
 			}
 		}
-		
+
 		return sb.substring(0, sb.length() - 2).toString();
 	}
 
