@@ -36,21 +36,27 @@ public abstract class AbstractImpl {
 		this.client = client;
 	}
 
-	protected Headers getHeaders(String cookie) {
+	protected Headers getHeaders(String cookie, String token) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("Content-Type", "application/json");
+		
 		if (cookie != null) {
 			map.put("Cookie", cookie + "; vmware-api-session-id=" + client.getSession());
 		} else {
 			map.put("Cookie", "vmware-api-session-id=" + client.getSession());
 		}
+		
+		if (token != null) {
+			map.put("X-VSPHERE-UI-XSRF-TOKEN", token);
+		}
 		return Headers.of(map);
 	}
+	
 
 	protected JsonNode listWithoutCookie(String url) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(null))
+				.headers(getHeaders(null, null))
 				.method("GET", null)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
@@ -59,7 +65,7 @@ public abstract class AbstractImpl {
 	protected JsonNode getWithoutCookie(String url) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(null))
+				.headers(getHeaders(null, null))
 				.method("GET", null)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
@@ -73,20 +79,20 @@ public abstract class AbstractImpl {
 		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(null))
+				.headers(getHeaders(null, null))
 				.method("POST", body)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 	
 	@SuppressWarnings("deprecation")
-	protected JsonNode postWithCookie(String url, String str, String cookie) throws Exception {
+	protected JsonNode postWithCookie(String url, String str, String cookie, String token) throws Exception {
 		
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(cookie))
+				.headers(getHeaders(cookie, token))
 				.method("POST", body)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
@@ -99,7 +105,7 @@ public abstract class AbstractImpl {
 		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(cookie))
+				.headers(getHeaders(cookie, null))
 				.method("POST", body)
 				.build();
 		
@@ -124,7 +130,7 @@ public abstract class AbstractImpl {
 		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(null))
+				.headers(getHeaders(null, null))
 				.method("DELETE", body)
 				.build();
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
@@ -144,7 +150,7 @@ public abstract class AbstractImpl {
 	protected JsonNode listWithCookie(String url, String cookie) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(cookie))
+				.headers(getHeaders(cookie, null))
 				.method("GET", null)
 				.build();
 		ResponseBody body = client.getHttpClient().newCall(request).execute().body();

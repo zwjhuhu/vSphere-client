@@ -43,7 +43,7 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode createDvs(String datacenter, String name, String cookie) {
+	public JsonNode createDvs(String datacenter, String name, String cookie, String token) {
 		
 		JsonNode json = client.virtualMachinePools().getDataCenterInfo(datacenter, cookie);
 		
@@ -54,18 +54,18 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 		try {
 			return postWithCookie(fullUrl, L3.replace("DCNAME", dc)
 									.replace("UUID", uuid)
-									.replace("NAME", name), cookie);
+									.replace("NAME", name), cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public JsonNode deleteDvs(String name, String cookie) throws Exception {
+	public JsonNode deleteDvs(String name, String cookie, String token) throws Exception {
 		String id = searchRealname(name, "Distributed Switch", cookie);
 		String fullUrl = this.client.getUrl() + "/ui/mutation/remove/" + URLEncoder.encode(id, "utf-8");
 		try {
-			return postWithCookie(fullUrl.replace("ID", id), "", cookie);
+			return postWithCookie(fullUrl.replace("ID", id), "", cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -272,6 +272,14 @@ public class VsphereClient {
 		}
 		return null;
 	}
+	
+    public String getXSRFToken(String cookie) throws Exception {
+    	JsonNode uiJson = uiUrl(cookie);
+		String str = getKeyInHeader("Set-Cookie", uiJson);
+		int stx = str.indexOf("=");
+		int etx = str.lastIndexOf(";");
+		return str.substring(stx + 1, etx);
+    }
 
 	public String getSAMLResponse(InputStream is) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
