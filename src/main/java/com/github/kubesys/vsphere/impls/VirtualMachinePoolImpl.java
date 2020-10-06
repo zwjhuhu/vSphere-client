@@ -150,6 +150,24 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode listVMDisks(String vmid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode listVMNICs(String vmid) throws Exception {
+		try {
+			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode listVMsInCluster(String clusterId) throws Exception {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm?filter.clusters=" + clusterId);

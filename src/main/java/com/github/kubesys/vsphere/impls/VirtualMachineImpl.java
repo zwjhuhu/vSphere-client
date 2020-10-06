@@ -117,6 +117,10 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode clone(String name, String template, String folder, String datastore, String pool, String uuid, String cookie, String token) {
+		return createFromTemplate(name, template, folder, datastore, pool, uuid, cookie, token);
+	}
+	
 	public JsonNode getImageInfo(String vm) {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
@@ -236,6 +240,34 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		try {
 			
 			patch(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/******************************************************************************
+	 * 
+	 * 
+	 *                          Delete
+	 * 
+	 * 
+	 ******************************************************************************/
+	
+	public boolean deleteVMDisk(String vmid, String diskId) throws Exception {
+		try {
+			listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk/" + diskId);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean deleteVMNIC(String vmid, String nicId) throws Exception {
+		try {
+			deleteWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet/" + nicId);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

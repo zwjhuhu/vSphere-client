@@ -62,6 +62,15 @@ public abstract class AbstractImpl {
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 	
+	protected JsonNode deleteWithoutCookie(String url) throws Exception {
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getHeaders(null, null))
+				.method("DELETE", null)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+	}
+	
 	protected JsonNode getWithoutCookie(String url) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)
