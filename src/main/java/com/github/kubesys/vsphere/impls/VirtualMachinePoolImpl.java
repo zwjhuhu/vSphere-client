@@ -188,13 +188,13 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 	
 	static String LIST_VM_TEMPLATE = "{\"constraintObjectId\":\"DATACENTER\",\"queryFilterId\":\"relatedItemsListFilterId\",\"filterParams\":[\"vmTemplatesForDatacenter\"],\"requestedProperties\":[\"id\",\"primaryIconId\",\"name\",\"labelIds\",\"provisionedSpace.@formatted\",\"config/guestFullName\",\"hwVersion.@formatted\",\"summary.config.memorySizeMB.@formatted\"],\"dataModels\":[\"VirtualMachine\"],\"take\":100,\"skip\":0,\"sort\":[{\"field\":\"name\",\"dir\":\"desc\"}],\"listViewId\":\"vsphere.core.template.list\",\"isLiveRefreshRequest\":false}";
 	
-	public JsonNode listVMTemplates(String datacenter, String cookie) throws Exception {
+	public JsonNode listVMTemplates(String datacenter, String cookie, String token) throws Exception {
 		try {
 			String id = search(datacenter, "Datacenter", cookie)
 									.get("id").asText();
 			OkHttpClient newClient = client.createHttpClient(true);
-			return postWithCookie(newClient, "https://133.133.135.35/ui/list/ex", 
-								LIST_VM_TEMPLATE.replace("DATACENTER", id), cookie);
+			return postWithCookie(newClient, this.client.getUrl() + "/ui/list/ex", 
+								LIST_VM_TEMPLATE.replace("DATACENTER", id), cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

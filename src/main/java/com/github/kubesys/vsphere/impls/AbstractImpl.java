@@ -121,13 +121,13 @@ public abstract class AbstractImpl {
 	}
 	
 	@SuppressWarnings("deprecation")
-	protected JsonNode postWithCookie(OkHttpClient newClient, String url, String str, String cookie) throws Exception {
+	protected JsonNode postWithCookie(OkHttpClient newClient, String url, String str, String cookie, String token) throws Exception {
 		
 		MediaType mediaType = MediaType.parse("application/json");
 		RequestBody body = RequestBody.create(mediaType, str);
 		Request request = new Request.Builder()
 				.url(url)
-				.headers(getHeaders(cookie, null))
+				.headers(getHeaders(cookie, token))
 				.method("POST", body)
 				.build();
 		
@@ -141,6 +141,7 @@ public abstract class AbstractImpl {
 			sb.append(line);
 		}
 		
+		System.out.println(sb.toString());
 		return new ObjectMapper().readTree(byteStream);
 	}
 
