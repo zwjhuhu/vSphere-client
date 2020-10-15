@@ -95,6 +95,19 @@ public abstract class AbstractImpl {
 	}
 	
 	@SuppressWarnings("deprecation")
+	protected JsonNode patchWithoutCookie(String url, String str) throws Exception {
+		
+		MediaType mediaType = MediaType.parse("application/json");
+		RequestBody body = RequestBody.create(mediaType, str);
+		Request request = new Request.Builder()
+				.url(url)
+				.headers(getHeaders(null, null))
+				.method("PATCH", body)
+				.build();
+		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+	}
+	
+	@SuppressWarnings("deprecation")
 	protected JsonNode postWithCookie(String url, String str, String cookie, String token) throws Exception {
 		
 		MediaType mediaType = MediaType.parse("application/json");
@@ -128,7 +141,6 @@ public abstract class AbstractImpl {
 			sb.append(line);
 		}
 		
-		System.out.println(sb);
 		return new ObjectMapper().readTree(byteStream);
 	}
 
@@ -145,17 +157,6 @@ public abstract class AbstractImpl {
 		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
 	}
 
-	protected JsonNode patch(String url, String body) throws Exception {
-//		HttpEntity<String> getReq = new HttpEntity<>(body, getDefHttpHeaders());
-//		CloseableHttpClient httpClient = HttpClientBuilder.create()
-//				.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-//				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
-//		RestTemplate restTemplate = new RestTemplate();
-//		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-//		return restTemplate.exchange(url, HttpMethod.PATCH, getReq, JsonNode.class).getBody();
-		return null;
-	}
-	
 	protected JsonNode listWithCookie(String url, String cookie) throws Exception {
 		Request request = new Request.Builder()
 				.url(url)

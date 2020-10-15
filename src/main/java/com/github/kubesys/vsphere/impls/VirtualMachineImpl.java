@@ -218,10 +218,10 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public boolean updateCPU(String vm, int num) {
+	public boolean updateCPU(String vmid, int num) {
 		try {
 			
-			patch(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/hardware/cpu", CPU.replace("NUMBER", String.valueOf(num)));
+			patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/cpu", CPU.replace("NUMBER", String.valueOf(num)));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -236,10 +236,10 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"    }\r\n" + 
 			"}";
 	
-	public boolean updateRAM(String vm, int size) {
+	public boolean updateRAM(String vmid, int size) {
 		try {
 			
-			patch(this.client.getUrl() + "/rest/vcenter/vm/" + vm + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
+			patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
