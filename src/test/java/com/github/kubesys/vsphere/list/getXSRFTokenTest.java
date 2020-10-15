@@ -13,6 +13,7 @@ public class getXSRFTokenTest extends VsphereClientTest {
 		VsphereClient httpClient = getClient();
 		String cookie = httpClient.getCookie();
 		JsonNode jsonNode = httpClient.uiUrl(cookie);
+		System.out.println(cookie);
 		System.out.println(httpClient.getKeyInHeader("Set-Cookie", jsonNode));
 	}
 }

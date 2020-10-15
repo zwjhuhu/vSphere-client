@@ -9,8 +9,8 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class ListTemplatesTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		String cookie = "VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_cb3ef0f238e008e57794c12eace1e815; VSPHERE-UI-JSESSIONID=D71636D170A7790411070C53083BE4BB; VSPHERE-UI-XSRF-TOKEN=7f710599-2cf6-4b47-b7b2-6f423ebfb1af; style=light; CastleSessionvsphere.test=_4c212205771912f765561b679f7ebc69";
-		String token = "7f710599-2cf6-4b47-b7b2-6f423ebfb1af";
+		String cookie = "CastleSessionvsphere.test=_b828fd66894edfc46f441334c7d7afe9; VSPHERE-UI-JSESSIONID=CE736EFF53517DF19559ECFE81FF9046; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_963fd26153647507824a18314a89bcee";
+		String token = "3d6e7fee-9b53-47fd-9637-186148ff2baa";
 		System.out.println(getClient().virtualMachinePools().listVMTemplates("Datacenter", cookie, token));
 		
 	}

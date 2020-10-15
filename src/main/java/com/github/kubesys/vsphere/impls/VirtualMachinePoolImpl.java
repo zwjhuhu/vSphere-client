@@ -193,7 +193,7 @@ public class VirtualMachinePoolImpl extends AbstractImpl  {
 			String id = search(datacenter, "Datacenter", cookie)
 									.get("id").asText();
 			OkHttpClient newClient = client.createHttpClient(true);
-			return postWithCookie(newClient, this.client.getUrl() + "/ui/list/ex", 
+			return postWithCookie(newClient, this.client.getUrl() + "/ui/list/ex/", 
 								LIST_VM_TEMPLATE.replace("DATACENTER", id), cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
