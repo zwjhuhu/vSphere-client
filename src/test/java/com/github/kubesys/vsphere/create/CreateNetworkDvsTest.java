@@ -8,8 +8,8 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class CreateNetworkDvsTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_1e25d9c38a25b646802185ed9be54393; VSPHERE-UI-JSESSIONID=1595B1887BAEE4E31EB80C2315AAAD4B; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_f275851a25186ff1ddfa0e0204607cea";
-		String token = "98b413f8-7994-410a-a650-53668cdf6898";
+		String cookie = "CastleSessionvsphere.test=_b828fd66894edfc46f441334c7d7afe9; VSPHERE-UI-JSESSIONID=CE736EFF53517DF19559ECFE81FF9046; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_963fd26153647507824a18314a89bcee";
+		String token = "3d6e7fee-9b53-47fd-9637-186148ff2baa";
 		System.out.println(getClient().virtualMachineNetworks().createDvs("Datacenter", "henry222", cookie, token));
 	}
 }

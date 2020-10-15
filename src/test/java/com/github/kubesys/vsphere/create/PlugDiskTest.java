@@ -8,7 +8,8 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class PlugDiskTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().getResourcePool("resgroup-17"));
+		//10GB硬盘，硬盘插入位置，比如当前虚拟机有1块盘（存放在0位置），则可以填写1
+		System.out.println(getClient().virtualMachines().plugVMDisk("vm-21", "test", 10240000000L, 1)); 
 	}
 }
 

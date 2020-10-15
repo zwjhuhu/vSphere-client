@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class DeleteVMNICTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(getClient().virtualMachines().deleteVMNIC("vm-21", "4001"));
+		System.out.println(getClient().virtualMachines().unplugVMNIC("vm-21", "4001"));
 	}
 }
 

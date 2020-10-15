@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class DeleteVMDiskTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(getClient().virtualMachines().deleteVMDisk("vm-21", "2001"));
+		System.out.println(getClient().virtualMachines().unplugVMDisk("vm-21", "2001"));
 	}
 }
 

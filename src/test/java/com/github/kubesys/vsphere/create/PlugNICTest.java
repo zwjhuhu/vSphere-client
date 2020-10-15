@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class PlugNICTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().getResourcePool("resgroup-17"));
+		System.out.println(getClient().virtualMachines().plugVM_STD_NIC("vm-21", "network-11"));
 	}
 }
 

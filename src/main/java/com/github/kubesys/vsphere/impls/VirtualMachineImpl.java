@@ -255,7 +255,58 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	 * 
 	 ******************************************************************************/
 	
-	public boolean deleteVMDisk(String vmid, String diskId) throws Exception {
+	public static String CREATE_DISK = "{\r\n" + 
+			"	\"spec\": {\r\n" + 
+			"		\"new_vmdk\": {\r\n" + 
+			"			\"capacity\": SIZE,\r\n" + 
+			"			\"name\": \"NAME\"\r\n" + 
+			"		},\r\n" + 
+			"		\"scsi\": {\r\n" + 
+			"			\"bus\": 0,\r\n" + 
+			"			\"unit\": UNIT\r\n" + 
+			"		},\r\n" + 
+			"		\"type\": \"SCSI\"\r\n" + 
+			"	}\r\n" + 
+			"}";
+	
+	public boolean plugVMDisk(String vmid, String name, long size, int unit) throws Exception {
+		try {
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk",
+					CREATE_DISK.replace("NAME", name).replace("SIZE", String.valueOf(size)).replace("UNIT", String.valueOf(unit)));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static String CREATE_STD_NIC = "{\r\n" + 
+			"	\"spec\": {\r\n" + 
+			"        \"backing\": {\r\n" + 
+			"            \"network\": \"NAME\",\r\n" + 
+			"            \"type\": \"STANDARD_PORTGROUP\"\r\n" + 
+			"        },\r\n" + 
+			"		\"allow_guest_control\": true,\r\n" + 
+			"		\"mac_type\": \"ASSIGNED\",\r\n" + 
+			"		\"start_connected\": true,\r\n" + 
+			"		\"type\": \"VMXNET3\",\r\n" + 
+			"		\"upt_compatibility_enabled\": true,\r\n" + 
+			"		\"wake_on_lan_enabled\": true\r\n" + 
+			"	}\r\n" + 
+			"}";
+	
+	public boolean plugVM_STD_NIC(String vmid, String name) throws Exception {
+		try {
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
+														CREATE_STD_NIC.replace("NAME", name));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean unplugVMDisk(String vmid, String diskId) throws Exception {
 		try {
 			listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk/" + diskId);
 			return true;
@@ -265,7 +316,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return false;
 	}
 	
-	public boolean deleteVMNIC(String vmid, String nicId) throws Exception {
+	public boolean unplugVMNIC(String vmid, String nicId) throws Exception {
 		try {
 			deleteWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet/" + nicId);
 			return true;
