@@ -101,14 +101,18 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public JsonNode createFromTemplate(String name, String template, String folder, String datastore, String pool, String uuid, String cookie, String token) {
+	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
 		
+		JsonNode poolJson = client.virtualMachinePools().getResourcePoolInfo(pool, cookie);
+		
+		String poolid = poolJson.get("provider").get("value").asText();;
+		String uuid = poolJson.get("provider").get("serverGuid").asText();
 		try {
 			String JSON = CLONE.replace("VMNAME", name)
-							.replace("TEMPLATENAME", template)
-							.replace("FOLDERNAME", folder)
-							.replace("POOLNAME", pool)
-							.replaceAll("DATASTORENAME", datastore)
+							.replace("TEMPLATENAME", templateid)
+							.replace("FOLDERNAME", folderid)
+							.replace("POOLNAME", poolid)
+							.replaceAll("DATASTORENAME", datastoreid)
 							.replaceAll("UUID", uuid);
 			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, cookie, token);
 		} catch (Exception e) {
@@ -117,8 +121,8 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode clone(String name, String template, String folder, String datastore, String pool, String uuid, String cookie, String token) {
-		return createFromTemplate(name, template, folder, datastore, pool, uuid, cookie, token);
+	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
+		return createFromTemplate(name, templateid, folderid, datastoreid, pool, cookie, token);
 	}
 	
 	public JsonNode getImageInfo(String vm) {

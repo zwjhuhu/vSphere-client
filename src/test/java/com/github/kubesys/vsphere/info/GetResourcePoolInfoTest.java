@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class GetResourcePoolInfoTest extends VsphereClientTest {
 
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_a3222d7ba9e53e4e4d1eb4b7b7f970c2; VSPHERE-UI-JSESSIONID=7B738674170F102C9C1992F1A47FCB84; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_f379ff8bd2659a899abef5d9ccfda872";
+		String cookie = "CastleSessionvsphere.test=_8d90d5f092940e41a5b037808f66d2d4; VSPHERE-UI-JSESSIONID=B8CF2CADACD55256AA68E0AE9DA8A22C; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_d288f21b26045f67b7114a90dbe43457";
 		System.out.println(getClient().virtualMachinePools().getResourcePoolInfo("test", cookie));
 	}
 }
