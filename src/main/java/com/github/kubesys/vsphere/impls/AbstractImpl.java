@@ -245,4 +245,16 @@ public abstract class AbstractImpl {
 		}
 		return null;
 	}
+	
+	public JsonNode searchUUID(String name, String type, String cookie) {
+
+		try {
+			
+			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
+			return listWithCookie(clusterIdUrl, cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

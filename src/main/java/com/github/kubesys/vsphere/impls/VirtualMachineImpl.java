@@ -121,6 +121,23 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String poolid, String uuid, String cookie, String token) {
+		
+		try {
+			
+			String JSON = CLONE.replace("VMNAME", name)
+							.replace("TEMPLATENAME", templateid)
+							.replace("FOLDERNAME", folderid)
+							.replace("POOLNAME", poolid)
+							.replaceAll("DATASTORENAME", datastoreid)
+							.replaceAll("UUID", uuid);
+			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, cookie, token);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
 		return createFromTemplate(name, templateid, folderid, datastoreid, pool, cookie, token);
 	}
