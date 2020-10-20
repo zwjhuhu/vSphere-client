@@ -141,8 +141,7 @@ public abstract class AbstractImpl {
 			sb.append(line);
 		}
 		
-		System.out.println(sb.toString());
-		return new ObjectMapper().readTree(byteStream);
+		return new ObjectMapper().readTree(sb.toString());
 	}
 
 	@SuppressWarnings("deprecation")

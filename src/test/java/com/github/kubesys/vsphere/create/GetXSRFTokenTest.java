@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class GetXSRFTokenTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_a508022e065a2d5503343de398632031; VSPHERE-UI-JSESSIONID=B681433D517C97FC2BE8760E5F26C013; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_8795d65ad8206903ef6b688c6322a663";
+		String cookie = "CastleSessionvsphere.test=_424d98e6bf7f8dbd59938bc407f7e5f8; VSPHERE-UI-JSESSIONID=5AE72AC5D6E6A03172263404A1EA76B9; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_d37aaf00513f9c71b082544f5fd8f506";
 		System.out.println(getClient().getXSRFToken(cookie));
 	}
 }
