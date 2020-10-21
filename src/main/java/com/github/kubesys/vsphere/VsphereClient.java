@@ -81,6 +81,11 @@ public class VsphereClient {
 		this.httpClient = createHttpClient(false);
 		this.session = new ObjectMapper().readTree(
 				simpleLogin(username, password).body().byteStream()).get("value").asText();
+		JsonNode json = virtualMachinePools().listNetworks();
+		if (json.has("type") && json.get("type")
+					.asText().contains("unauthenticated")) {
+			throw new Exception("unauthenticated errors, please check url, username, password");
+		}
 	}
 
 	/*******************************************************
