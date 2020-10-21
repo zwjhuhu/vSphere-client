@@ -3,8 +3,9 @@
  */
 package com.github.kubesys.vsphere.impls;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kubesys.vsphere.VsphereClient;
@@ -31,7 +32,7 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 			"	\"numberOfUplinks\": 4,\r\n" + 
 			"	\"niocEnabled\": true,\r\n" + 
 			"	\"createDefaultPortgroup\": true,\r\n" + 
-			"	\"defaultPortgroupName\": \"DPortGroup 1\"\r\n" + 
+			"	\"defaultPortgroupName\": \"DPORTGROUP\"\r\n" + 
 			"}";
 	
 	public JsonNode listNetworks() throws Exception {
@@ -54,7 +55,8 @@ public class VirtualMachineNetworkImpl extends AbstractImpl  {
 		try {
 			return postWithCookie(fullUrl, L3.replace("DCNAME", dc)
 									.replace("UUID", uuid)
-									.replace("NAME", name), cookie, token);
+									.replace("NAME", name)
+									.replace("DPORTGROUP", "DPortGroup-" + RandomStringUtils.randomAlphanumeric(10)), cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
