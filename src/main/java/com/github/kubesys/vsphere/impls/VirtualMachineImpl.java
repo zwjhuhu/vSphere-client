@@ -392,6 +392,32 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return false;
 	}
 	
+	public static String CREATE_DVS_NIC = "{\r\n" + 
+			"	\"spec\": {\r\n" + 
+			"        \"backing\": {\r\n" + 
+			"            \"network\": \"NAME\",\r\n" + 
+			"            \"type\": \"DISTRIBUTED_PORTGROUP\"\r\n" + 
+			"        },\r\n" + 
+			"		\"allow_guest_control\": true,\r\n" + 
+			"		\"mac_type\": \"ASSIGNED\",\r\n" + 
+			"		\"start_connected\": true,\r\n" + 
+			"		\"type\": \"VMXNET3\",\r\n" + 
+			"		\"upt_compatibility_enabled\": true,\r\n" + 
+			"		\"wake_on_lan_enabled\": true\r\n" + 
+			"	}\r\n" + 
+			"}";
+	
+	public boolean plugVM_DVS_NIC(String vmid, String name) throws Exception {
+		try {
+			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
+							CREATE_DVS_NIC.replace("NAME", name));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public boolean unplugVMDisk(String vmid, String diskId) throws Exception {
 		try {
 			listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk/" + diskId);
