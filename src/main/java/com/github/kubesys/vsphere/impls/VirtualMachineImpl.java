@@ -195,6 +195,18 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public JsonNode getVMProperties(String vm, String cookie) {
+		try {
+			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+			String id = searchUUID.get(0).get("results").get(0).get("id").asText();
+			String url = this.client.getUrl() + "/ui/data/properties/" + id + "?properties=vmConfigContext";
+			return listWithCookie(url, cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode getImageInfo(String vm) {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
