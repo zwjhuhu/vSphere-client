@@ -8,8 +8,8 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class GetVMInfoTest extends VsphereClientTest {
 
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_b6b71090743b9c580f46067a93692485; VSPHERE-UI-JSESSIONID=837D6ABD71BBC8F2CCCFD419E87513DB; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_098f2274ef6b2a29f1384c618769f99f";
-		System.out.println(getClient().virtualMachines().getVMInfo("CentOS7", cookie));
+		String cookie= "CastleSessionvsphere.local=_cf3aba140b3904e4841655ef2f4e7530; JSESSIONID=870F9820F83F9F22EF4042928E5D8B47D281; VSPHERE-USERNAME=Administrator%40VSPHERE.LOCAL; VSPHERE-CLIENT-SESSION-INDEX=_b8dde344bb766b15e56e7b9ea2166ab8";
+		System.out.println(getClient().virtualMachines().getVMInfo("luleyong", cookie));
 	}
 
 }

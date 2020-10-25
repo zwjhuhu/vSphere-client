@@ -161,6 +161,40 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	public static String MIGRATE = "{\r\n" + 
+			"	\"relocateSpec\": {\r\n" + 
+			"		\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec\",\r\n" + 
+			"		\"pool\": {\r\n" + 
+			"			\"type\": \"ResourcePool\",\r\n" + 
+			"			\"value\": \"POOLID\",\r\n" + 
+			"			\"serverGuid\": \"SERVERID\",\r\n" + 
+			"			\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"		},\r\n" + 
+			"		\"host\": {\r\n" + 
+			"			\"type\": \"HostSystem\",\r\n" + 
+			"			\"value\": \"HOSTID\",\r\n" + 
+			"			\"serverGuid\": \"SERVERID\",\r\n" + 
+			"			\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"		},\r\n" + 
+			"		\"deviceChange\": []\r\n" + 
+			"	},\r\n" + 
+			"	\"priority\": \"highPriority\"\r\n" + 
+			"}";
+	
+	public JsonNode migrateTo(String vm, String targetPoolId, String targetServerId, String targetHostId, String cookie, String token) {
+		try {
+			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+			String id = searchUUID.get(0).get("results").get(0).get("id").asText().replace(":", "%3A");
+			String url = this.client.getUrl() + "/ui/mutation/apply/" + id + "?propertyObjectType=com.vmware.vsphere.client.vm.migration.LocationSpec";
+			return postWithCookie(url, MIGRATE.replace("POOLID", targetPoolId)
+									.replace("HOSTID", targetHostId)
+									.replaceAll("SERVERID", targetServerId), cookie, token);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode getImageInfo(String vm) {
 		try {
 			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
