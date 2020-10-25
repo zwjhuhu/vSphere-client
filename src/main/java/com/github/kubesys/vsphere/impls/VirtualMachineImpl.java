@@ -121,6 +121,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	
 	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String poolid, String uuid, String cookie, String token) {
 		
 		try {
@@ -140,6 +141,24 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	
 	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
 		return createFromTemplate(name, templateid, folderid, datastoreid, pool, cookie, token);
+	}
+	
+	public static String TOIMAGE = "{\r\n" + 
+			"	\"objectIds\": [\"ID\"],\r\n" + 
+			"	\"propertyObjectType\": \"com.vmware.vsphere.client.vm.VmTemplateSpec\",\r\n" + 
+			"	\"propertySpec\": \"{}\"\r\n" + 
+			"}";
+	
+	public JsonNode createImageFromVM(String vm, String cookie, String token) {
+		try {
+			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+			String id = searchUUID.get(0).get("results").get(0).get("id").asText();
+			return postWithCookie(this.client.getUrl() + "/ui/mutation/applyOnMultiEntity", 
+					TOIMAGE.replace("ID", id), cookie, token);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public JsonNode getImageInfo(String vm) {
