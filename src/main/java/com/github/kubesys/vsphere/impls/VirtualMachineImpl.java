@@ -86,6 +86,12 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	},\r\n" + 
 			"	\"cloneSpec\": {\r\n" + 
 			"		\"_type\": \"com.vmware.vim.binding.vim.vm.CloneSpec\",\r\n" + 
+			"       \"host\": {\r\n" + 
+			"			\"type\": \"HostSystem\",\r\n" + 
+			"			\"value\": \"HOSTID\",\r\n" + 
+			"			\"serverGuid\": \"UUID\",\r\n" + 
+			"			\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
+			"		}," +
 			"		\"location\": {\r\n" + 
 			"			\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec\",\r\n" + 
 			"			\"host\": null,\r\n" + 
@@ -123,7 +129,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
+	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
 		
 		JsonNode poolJson = client.virtualMachinePools().getResourcePoolInfo(pool, cookie);
 		
@@ -134,6 +140,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 							.replace("TEMPLATENAME", templateid)
 							.replace("FOLDERNAME", folderid)
 							.replace("POOLNAME", poolid)
+							.replace("HOSTID", hostid)
 							.replaceAll("DATASTORENAME", datastoreid)
 							.replaceAll("UUID", uuid);
 			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, cookie, token);
@@ -143,26 +150,26 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	
-	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String poolid, String uuid, String cookie, String token) {
+	public JsonNode getTask(String taskid, String cookie) {
 		
 		try {
-			
-			String JSON = CLONE.replace("VMNAME", name)
-							.replace("TEMPLATENAME", templateid)
-							.replace("FOLDERNAME", folderid)
-							.replace("POOLNAME", poolid)
-							.replaceAll("DATASTORENAME", datastoreid)
-							.replaceAll("UUID", uuid);
-			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, cookie, token);
+			String url = this.client.getUrl() + "/ui/tasks/?pageSize=100&requestedPage=0&requestingPreviousPage=true";
+			JsonNode results = listWithCookie(url, cookie);
+			for (int i = 0; i < results.size(); i++) {
+				JsonNode res = results.get(i);
+				if (res.get("key").asText().equals(taskid)) {
+					return res;
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+		
 	}
 	
-	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String cookie, String token) {
-		return createFromTemplate(name, templateid, folderid, datastoreid, pool, cookie, token);
+	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
+		return createFromTemplate(name, templateid, folderid, datastoreid, pool, hostid, cookie, token);
 	}
 	
 	public static String TOIMAGE = "{\r\n" + 
