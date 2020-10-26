@@ -36,11 +36,33 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
-	public JsonNode getVMTemplateInfo(String template, String cookie) {
+	public JsonNode getVMTemplateInfo(String vm, String cookie) {
 		try {
-			String id = search(template, "VM Template", cookie)
+			String id = search(vm, "VM Template", cookie)
 									.get("id").asText();
 			return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getVMTemplateHardwareInfo(String vm, String cookie) {
+		try {
+			String id = search(vm, "VM Template", cookie)
+									.get("id").asText();
+			return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode getVMHardwareInfo(String vm, String cookie) {
+		try {
+			String id = search(vm, "Virtual Machine", cookie)
+									.get("id").asText();
+			return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

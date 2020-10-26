@@ -203,6 +203,14 @@ public abstract class AbstractImpl {
 		return null;
 	}
 	
+	public JsonNode detail(String id, String model, String cookie) throws Exception {
+		String url = this.client.getUrl() + "/ui/data/" + id + "?model=" + model;
+		return listWithCookie(this.client.getUrl() + "/ui/data/" 
+							+ id + "?model=" + model, cookie);
+	}
+	
+	
+	
 	public JsonNode info(String id, String model, String cookie) throws Exception {
 		return listWithCookie(this.client.getUrl() + "/ui/data/" 
 							+ id + "?model=" + model, cookie);
@@ -219,7 +227,8 @@ public abstract class AbstractImpl {
 
 			for (int i = 0; i < objList; i++) {
 				JsonNode obj = objects.get(i);
-				if (obj.get("label").asText().equals(type)) {
+				String asText = obj.get("label").asText();
+				if (asText.equals(type)) {
 
 					JsonNode results = obj.get("results");
 
