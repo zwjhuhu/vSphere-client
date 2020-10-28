@@ -150,6 +150,27 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return null;
 	}
 	
+	
+	public JsonNode selectResource(String datacenterId, String cookie) {
+		try {
+			String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=RefAsRoot&objRef=" + datacenterId + "&treeId=DcHostsAndClustersTree";
+			return listWithCookie(url, cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JsonNode selectResource(String typeId, String uuid, String cookie) {
+		try {
+			String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=" + typeId + "&objRef=" + uuid + "&treeId=DcHostsAndClustersTree";
+			return listWithCookie(url, cookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JsonNode getTask(String taskid, String cookie) {
 		
 		try {
