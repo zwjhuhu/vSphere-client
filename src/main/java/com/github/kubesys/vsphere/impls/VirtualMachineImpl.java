@@ -86,15 +86,14 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	},\r\n" + 
 			"	\"cloneSpec\": {\r\n" + 
 			"		\"_type\": \"com.vmware.vim.binding.vim.vm.CloneSpec\",\r\n" + 
+			"		\"location\": {\r\n" + 
+			"			\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec\",\r\n" + 
 			"       \"host\": {\r\n" + 
 			"			\"type\": \"HostSystem\",\r\n" + 
 			"			\"value\": \"HOSTID\",\r\n" + 
 			"			\"serverGuid\": \"UUID\",\r\n" + 
 			"			\"_type\": \"com.vmware.vim.binding.vmodl.ManagedObjectReference\"\r\n" + 
 			"		}," +
-			"		\"location\": {\r\n" + 
-			"			\"_type\": \"com.vmware.vim.binding.vim.vm.RelocateSpec\",\r\n" + 
-			"			\"host\": null,\r\n" + 
 			"			\"pool\": {\r\n" + 
 			"				\"type\": \"ResourcePool\",\r\n" + 
 			"				\"value\": \"POOLNAME\",\r\n" + 
