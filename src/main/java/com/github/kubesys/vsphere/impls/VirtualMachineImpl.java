@@ -4,6 +4,9 @@
 package com.github.kubesys.vsphere.impls;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.kubesys.vsphere.VsphereClient;
 
 /**
@@ -128,21 +131,129 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public JsonNode createFromTemplate(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
+	public JsonNode createFromTemplate(String name, String templateid, String serverGuid, String datastoreid, String folderid, String poolid, String hostid, String cookie, String token) {
 		
-		JsonNode poolJson = client.virtualMachinePools().getResourcePoolInfo(pool, cookie);
-		
-		String poolid = poolJson.get("provider").get("value").asText();;
-		String uuid = poolJson.get("provider").get("serverGuid").asText();
 		try {
-			String JSON = CLONE.replace("VMNAME", name)
-							.replace("TEMPLATENAME", templateid)
-							.replace("FOLDERNAME", folderid)
-							.replace("POOLNAME", poolid)
-							.replace("HOSTID", hostid)
-							.replaceAll("DATASTORENAME", datastoreid)
-							.replaceAll("UUID", uuid);
-			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", JSON, cookie, token);
+			ObjectNode node = new ObjectMapper().createObjectNode();
+			
+			{
+				ObjectNode vm = new ObjectMapper().createObjectNode();
+				vm.put("type", "VirtualMachine");
+				vm.put("value", templateid);
+				vm.put("serverGuid", serverGuid);
+				vm.put("_type", "com.vmware.vim.binding.vmodl.ManagedObjectReference");
+				node.set("vm", vm);
+			}
+			
+			node.put("name", name);
+			
+			{
+				ObjectNode folder = new ObjectMapper().createObjectNode();
+				folder.put("type", "Folder");
+				folder.put("value", folderid);
+				folder.put("serverGuid", serverGuid);
+				folder.put("_type", "com.vmware.vim.binding.vmodl.ManagedObjectReference");
+				node.set("folder", folder);
+			}
+			
+			{
+				ObjectNode clone = new ObjectMapper().createObjectNode();
+				clone.put("_type", "com.vmware.vim.binding.vim.vm.CloneSpec");
+				
+				{
+					ObjectNode loc = new ObjectMapper().createObjectNode();
+					loc.put("_type", "com.vmware.vim.binding.vim.vm.RelocateSpec");
+					
+					{
+						ObjectNode host = null;
+						if (hostid != null) {
+							host = new ObjectMapper().createObjectNode();
+							host.put("type", "HostSystem");
+							host.put("value", hostid);
+							host.put("serverGuid", serverGuid);
+							host.put("_type", "com.vmware.vim.binding.vmodl.ManagedObjectReference");
+						} 
+						loc.set("host", host);
+					}
+					
+					{
+						ObjectNode pool = new ObjectMapper().createObjectNode();;
+						pool.put("type", "ResourcePool");
+						pool.put("value", poolid);
+						pool.put("serverGuid", serverGuid);
+						pool.put("_type", "com.vmware.vim.binding.vmodl.ManagedObjectReference");
+						loc.set("pool", pool);
+					}
+					
+					{
+						
+						ObjectNode dsnode = new ObjectMapper().createObjectNode();
+						dsnode.put("serverGuid", serverGuid);
+						dsnode.put("type", "Datastore");
+						dsnode.put("value", datastoreid);
+						loc.set("datastore", dsnode);
+					}
+					
+					{
+						
+						ArrayNode list = new ObjectMapper().createArrayNode();
+						
+						ObjectNode item = new ObjectMapper().createObjectNode();
+						item.put("_type", "com.vmware.vim.binding.vim.vm.DefaultProfileSpec");
+						list.add(item);
+						
+						loc.set("profile", list);
+					}
+					
+					{
+						
+						ArrayNode list = new ObjectMapper().createArrayNode();
+						loc.set("deviceChange", list);
+					}
+					
+					
+					{
+						ArrayNode list = new ObjectMapper().createArrayNode();
+						
+						ObjectNode item = new ObjectMapper().createObjectNode();
+						item.put("_type", "com.vmware.vim.binding.vim.vm.RelocateSpec$DiskLocator");
+						
+						{
+							
+							ObjectNode dds = new ObjectMapper().createObjectNode();
+							dds.put("type", "Datastore");
+							dds.put("value", datastoreid);
+							dds.put("serverGuid", serverGuid);
+							item.set("datastore", dds);
+						}
+						
+						item.set("diskBackingInfo", null);
+						item.put("diskId", 2000);
+						
+						{
+							ArrayNode array = new ObjectMapper().createArrayNode();
+							
+							ObjectNode aitem = new ObjectMapper().createObjectNode();
+							aitem.put("_type", "com.vmware.vim.binding.vim.vm.DefaultProfileSpec");
+							array.add(item);
+							
+							aitem.set("profile", array);
+						}
+						
+						list.add(item);
+						
+						loc.set("disk", list);
+					}
+					clone.set("location", loc);
+					
+				}
+				
+				clone.put("template", false);
+				clone.put("powerOn", false);
+				node.set("cloneSpec", clone);
+			}
+			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", 
+								node.toString(), cookie, token);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -188,9 +299,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		
 	}
 	
-	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
-		return createFromTemplate(name, templateid, folderid, datastoreid, pool, hostid, cookie, token);
-	}
+//	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
+//		return createFromTemplate(name, templateid, folderid, datastoreid, pool, hostid, cookie, token);
+//	}
 	
 	public static String TOIMAGE = "{\r\n" + 
 			"	\"objectIds\": [\"ID\"],\r\n" + 

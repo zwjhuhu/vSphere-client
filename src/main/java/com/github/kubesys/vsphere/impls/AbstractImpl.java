@@ -205,8 +205,7 @@ public abstract class AbstractImpl {
 	
 	public JsonNode detail(String id, String model, String cookie) throws Exception {
 		String url = this.client.getUrl() + "/ui/data/" + id + "?model=" + model;
-		return listWithCookie(this.client.getUrl() + "/ui/data/" 
-							+ id + "?model=" + model, cookie);
+		return listWithCookie(url, cookie);
 	}
 	
 	
