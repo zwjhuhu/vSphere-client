@@ -268,7 +268,7 @@ public abstract class AbstractImpl {
 	public JsonNode valid(JsonNode json)  throws Exception {
 		if (json.has("value") && json.get("value").has("messages")) {
 			throw new Exception(json.get("value").get("messages").toString());
-		}
+		} 
 		return json;
 	}
 }

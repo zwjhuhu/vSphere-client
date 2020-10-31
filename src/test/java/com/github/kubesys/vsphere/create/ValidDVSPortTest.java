@@ -7,7 +7,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 /**
  * Unit test for simple App.
  */
-public class ValidDVSTest extends VsphereClientTest {
+public class ValidDVSPortTest extends VsphereClientTest {
 
 	public static void main(String[] args) throws Exception {
 		VsphereClient vClient = getClient();
