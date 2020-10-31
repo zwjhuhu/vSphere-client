@@ -597,4 +597,31 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		}
 		return false;
 	}
+	
+	public static String DVSID = "{\r\n" + 
+			"	\"constraintObjectId\": \"DVSID\",\r\n" + 
+			"	\"queryFilterId\": \"relatedItemsListFilterId\",\r\n" + 
+			"	\"filterParams\": [\"hostsForVMWDVS\"],\r\n" + 
+			"	\"requestedProperties\": [\"id\", \"primaryIconId\", \"name\", \"labelIds\", \"stateLabel\", \"summary.overallStatus\", \"cluster\", \"hostClusterName\", \"cpuUsage\", \"memoryUsage\", \"dasHostState.@formatted\", \"runtime.dasHostState.state\", \"summary.quickStats.uptime.@formatted\"],\r\n" + 
+			"	\"dataModels\": [\"HostSystem\"],\r\n" + 
+			"	\"take\": 100,\r\n" + 
+			"	\"skip\": 0,\r\n" + 
+			"	\"sort\": [{\r\n" + 
+			"		\"field\": \"name\",\r\n" + 
+			"		\"dir\": \"asc\"\r\n" + 
+			"	}],\r\n" + 
+			"	\"listViewId\": \"vsphere.core.host.list\",\r\n" + 
+			"	\"isLiveRefreshRequest\": false\r\n" + 
+			"}";
+	
+	
+	public boolean validDVS(String dvsid, String cookie) {
+		try {
+			String url = this.client.getUrl() + "/ui/list/ex/";
+			return postWithCookie(url, DVSID.replace("DVSID", dvsid), cookie, null).get("totalResultCount").asInt() != 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
