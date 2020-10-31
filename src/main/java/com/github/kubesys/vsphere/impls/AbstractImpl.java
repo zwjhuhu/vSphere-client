@@ -59,7 +59,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(null, null))
 				.method("GET", null)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 	
 	protected JsonNode deleteWithoutCookie(String url) throws Exception {
@@ -77,7 +77,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(null, null))
 				.method("GET", null)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 	
 
@@ -91,7 +91,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(null, null))
 				.method("POST", body)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -104,7 +104,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(null, null))
 				.method("PATCH", body)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -117,7 +117,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(cookie, token))
 				.method("POST", body)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -141,7 +141,7 @@ public abstract class AbstractImpl {
 			sb.append(line);
 		}
 		
-		return new ObjectMapper().readTree(sb.toString());
+		return valid(new ObjectMapper().readTree(sb.toString()));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -154,7 +154,7 @@ public abstract class AbstractImpl {
 				.headers(getHeaders(null, null))
 				.method("DELETE", body)
 				.build();
-		return new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream());
+		return valid(new ObjectMapper().readTree(client.getHttpClient().newCall(request).execute().body().byteStream()));
 	}
 
 	protected JsonNode listWithCookie(String url, String cookie) throws Exception {
@@ -164,7 +164,7 @@ public abstract class AbstractImpl {
 				.method("GET", null)
 				.build();
 		ResponseBody body = client.getHttpClient().newCall(request).execute().body();
-		return new ObjectMapper().readTree(body.byteStream());
+		return valid(new ObjectMapper().readTree(body.byteStream()));
 
 	}
 
@@ -205,14 +205,14 @@ public abstract class AbstractImpl {
 	
 	public JsonNode detail(String id, String model, String cookie) throws Exception {
 		String url = this.client.getUrl() + "/ui/data/" + id + "?model=" + model;
-		return listWithCookie(url, cookie);
+		return valid(listWithCookie(url, cookie));
 	}
 	
 	
 	
 	public JsonNode info(String id, String model, String cookie) throws Exception {
-		return listWithCookie(this.client.getUrl() + "/ui/data/" 
-							+ id + "?model=" + model, cookie);
+		return valid(listWithCookie(this.client.getUrl() + "/ui/data/" 
+							+ id + "?model=" + model, cookie));
 	}
 	
 	public JsonNode search(String name, String type, String cookie) {
@@ -258,10 +258,17 @@ public abstract class AbstractImpl {
 		try {
 			
 			String clusterIdUrl = this.client.getUrl() + "/ui/search/quicksearch/?opId=0&query=" + name;
-			return listWithCookie(clusterIdUrl, cookie);
+			return valid(listWithCookie(clusterIdUrl, cookie));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public JsonNode valid(JsonNode json)  throws Exception {
+		if (json.has("value") && json.get("value").has("messages")) {
+			throw new Exception(json.get("value").get("messages").toString());
+		}
+		return json;
 	}
 }

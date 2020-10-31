@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class UnplugNICTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(client.virtualMachinePools().getResourcePool("resgroup-17"));
+		System.out.println(getClient().virtualMachines().unplugVMNIC("vm-329", "4002"));
 	}
 }
 
