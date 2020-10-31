@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class SuspendVMTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(getClient().virtualMachines().suspend("vm-21"));
+		System.out.println(getClient().virtualMachines().suspend("vm-327"));
 	}
 }
 

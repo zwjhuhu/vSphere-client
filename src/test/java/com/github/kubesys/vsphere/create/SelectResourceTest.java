@@ -22,7 +22,7 @@ public class SelectResourceTest extends VsphereClientTest {
 		extracted(vClient, resList, "\t", cookie);
 	}
 
-	protected static void extracted(VsphereClient vClient, JsonNode resList, String spacing, String cookie) {
+	protected static void extracted(VsphereClient vClient, JsonNode resList, String spacing, String cookie) throws Exception {
 		for (int i = 0; i < resList.size(); i++) {
 			JsonNode res = resList.get(i);
 			System.out.println(spacing + res.get("text").asText());

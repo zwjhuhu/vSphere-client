@@ -8,7 +8,7 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class StopVMTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(getClient().virtualMachines().stop("vm-262"));
+		System.out.println(getClient().virtualMachines().stop("vm-327"));
 	}
 }
 

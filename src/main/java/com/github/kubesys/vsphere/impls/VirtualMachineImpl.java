@@ -19,57 +19,32 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		super(client);
 	}
 	
-	public JsonNode getVMInfo(String vm) {
-		try {
-			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMInfo(String vm) throws Exception {
+		return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
 	}
 	
-	public JsonNode getVMInfo(String vm, String cookie) {
-		try {
-			String id = search(vm, "Virtual Machine", cookie)
-									.get("id").asText();
-			return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMInfo(String vm, String cookie) throws Exception {
+		String id = search(vm, "Virtual Machine", cookie)
+								.get("id").asText();
+		return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
 	}
 	
-	public JsonNode getVMTemplateInfo(String vm, String cookie) {
-		try {
-			String id = search(vm, "VM Template", cookie)
-									.get("id").asText();
-			return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMTemplateInfo(String vm, String cookie) throws Exception {
+		String id = search(vm, "VM Template", cookie)
+								.get("id").asText();
+		return info(id, "com.vmware.vsphere.client.h5.vm.model.VmSummaryData", cookie);
 	}
 	
-	public JsonNode getVMTemplateHardwareInfo(String vm, String cookie) {
-		try {
-			String id = search(vm, "VM Template", cookie)
-									.get("id").asText();
-			return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMTemplateHardwareInfo(String vm, String cookie) throws Exception {
+		String id = search(vm, "VM Template", cookie)
+								.get("id").asText();
+		return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
 	}
 	
-	public JsonNode getVMHardwareInfo(String vm, String cookie) {
-		try {
-			String id = search(vm, "Virtual Machine", cookie)
-									.get("id").asText();
-			return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMHardwareInfo(String vm, String cookie) throws Exception {
+		String id = search(vm, "Virtual Machine", cookie)
+								.get("id").asText();
+		return detail(id, "com.vmware.vsphere.client.vm.model.HardwareViewData", cookie);
 	}
 	
 	
@@ -131,9 +106,8 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public JsonNode createFromTemplate(String name, String templateid, String serverGuid, String datastoreid, String folderid, String poolid, String hostid, String cookie, String token) {
+	public JsonNode createFromTemplate(String name, String templateid, String serverGuid, String datastoreid, String folderid, String poolid, String hostid, String cookie, String token) throws Exception {
 		
-		try {
 			ObjectNode node = new ObjectMapper().createObjectNode();
 			
 			{
@@ -254,31 +228,17 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			}
 			return postWithCookie(this.client.getUrl() + "/ui/mutation/add?propertyObjectType=com.vmware.vsphere.client.vm.VmCloneSpec", 
 								node.toString(), cookie, token);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	
-	public JsonNode selectResource(String datacenterId, String cookie) {
-		try {
-			String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=RefAsRoot&objRef=" + datacenterId + "&treeId=DcHostsAndClustersTree";
-			return listWithCookie(url, cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode selectResource(String datacenterId, String cookie) throws Exception {
+		String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=RefAsRoot&objRef=" + datacenterId + "&treeId=DcHostsAndClustersTree";
+		return listWithCookie(url, cookie);
 	}
 	
-	public JsonNode selectResource(String typeId, String uuid, String cookie) {
-		try {
-			String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=" + typeId + "&objRef=" + uuid + "&treeId=DcHostsAndClustersTree";
-			return listWithCookie(url, cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode selectResource(String typeId, String uuid, String cookie) throws Exception {
+		String url = this.client.getUrl() + "/ui/tree/children?nodeTypeId=" + typeId + "&objRef=" + uuid + "&treeId=DcHostsAndClustersTree";
+		return listWithCookie(url, cookie);
 	}
 	
 	public JsonNode getTask(String taskid, String cookie) {
@@ -299,26 +259,17 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		
 	}
 	
-//	public JsonNode clone(String name, String templateid, String folderid, String datastoreid, String pool, String hostid, String cookie, String token) {
-//		return createFromTemplate(name, templateid, folderid, datastoreid, pool, hostid, cookie, token);
-//	}
-	
 	public static String TOIMAGE = "{\r\n" + 
 			"	\"objectIds\": [\"ID\"],\r\n" + 
 			"	\"propertyObjectType\": \"com.vmware.vsphere.client.vm.VmTemplateSpec\",\r\n" + 
 			"	\"propertySpec\": \"{}\"\r\n" + 
 			"}";
 	
-	public JsonNode createImageFromVM(String vm, String cookie, String token) {
-		try {
-			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
-			String id = searchUUID.get(0).get("results").get(0).get("id").asText();
-			return postWithCookie(this.client.getUrl() + "/ui/mutation/applyOnMultiEntity", 
-					TOIMAGE.replace("ID", id), cookie, token);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode createImageFromVM(String vm, String cookie, String token) throws Exception {
+		JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+		String id = searchUUID.get(0).get("results").get(0).get("id").asText();
+		return postWithCookie(this.client.getUrl() + "/ui/mutation/applyOnMultiEntity", 
+				TOIMAGE.replace("ID", id), cookie, token);
 	}
 	
 	public static String MIGRATE = "{\r\n" + 
@@ -341,119 +292,68 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	\"priority\": \"highPriority\"\r\n" + 
 			"}";
 	
-	public JsonNode migrateTo(String vm, String targetPoolId, String targetServerId, String targetHostId, String cookie, String token) {
-		try {
-			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
-			String id = searchUUID.get(0).get("results").get(0).get("id").asText().replace(":", "%3A");
-			String url = this.client.getUrl() + "/ui/mutation/apply/" + id + "?propertyObjectType=com.vmware.vsphere.client.vm.migration.LocationSpec";
-			return postWithCookie(url, MIGRATE.replace("POOLID", targetPoolId)
-									.replace("HOSTID", targetHostId)
-									.replaceAll("SERVERID", targetServerId), cookie, token);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode migrateTo(String vm, String targetPoolId, String targetServerId, String targetHostId, String cookie, String token) throws Exception {
+		JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+		String id = searchUUID.get(0).get("results").get(0).get("id").asText().replace(":", "%3A");
+		String url = this.client.getUrl() + "/ui/mutation/apply/" + id + "?propertyObjectType=com.vmware.vsphere.client.vm.migration.LocationSpec";
+		return postWithCookie(url, MIGRATE.replace("POOLID", targetPoolId)
+								.replace("HOSTID", targetHostId)
+								.replaceAll("SERVERID", targetServerId), cookie, token);
 	}
 	
-	public JsonNode getVMProperties(String vm, String cookie) {
-		try {
-			JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
-			String id = searchUUID.get(0).get("results").get(0).get("id").asText();
-			String url = this.client.getUrl() + "/ui/data/properties/" + id + "?properties=vmConfigContext";
-			return listWithCookie(url, cookie);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getVMProperties(String vm, String cookie) throws Exception {
+		JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+		String id = searchUUID.get(0).get("results").get(0).get("id").asText();
+		String url = this.client.getUrl() + "/ui/data/properties/" + id + "?properties=vmConfigContext";
+		return listWithCookie(url, cookie);
 	}
 	
-	public JsonNode getImageInfo(String vm) {
-		try {
-			return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	public JsonNode getImageInfo(String vm) throws Exception {
+		return listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/"+vm);
 	}
 	
-	public boolean start(String vm) {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
-											+ vm + "/power/start", "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean start(String vm) throws Exception {
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
+										+ vm + "/power/start", "");
+		return true;
 	}
 	
-	public boolean stop(String vm) {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
-											+ vm + "/power/stop", "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean stop(String vm) throws Exception {
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
+										+ vm + "/power/stop", "");
+		return true;
 	}
 	
-	public boolean suspend(String vm) {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
-											+ vm + "/power/suspend", "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean suspend(String vm) throws Exception {
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
+										+ vm + "/power/suspend", "");
+		return true;
 	}
 	
-	public boolean reset(String vm) {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
-											+ vm + "/power/reset", "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean reset(String vm) throws Exception {
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" 
+										+ vm + "/power/reset", "");
+		return true;
 	}
 	
-	public boolean shutdown(String vm) {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/vcenter/vm/" 
-											+ vm + "/guest/power?action=shutdown", "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean shutdown(String vm) throws Exception {
+		postWithoutCookie(this.client.getUrl() + "/vcenter/vm/" 
+										+ vm + "/guest/power?action=shutdown", "");
+		return true;
 	}
 	
-	public boolean delete(String vmid) {
-		try {
-			removeWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid, "");
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean delete(String vmid) throws Exception {
+		removeWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid, "");
+		return true;
 	}
 	
 	// https://133.133.135.35/ui/events/?requestedPage=0
-		public JsonNode listVMEvents(String vm, String cookie) throws Exception {
-			try {
-				String id = search(vm, "Virtual Machine", cookie)
-						.get("id").asText();
-				return listWithCookie(this.client.getUrl() + "/ui/events/?"
-						+ "objectId=" + id, cookie);
-//						+ "requestedPage=" + page, cookie);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
+	public JsonNode listVMEvents(String vm, String cookie) throws Exception {
+			String id = search(vm, "Virtual Machine", cookie)
+					.get("id").asText();
+			return listWithCookie(this.client.getUrl() + "/ui/events/?"
+					+ "objectId=" + id, cookie);
+	}
 	
 	static String CPU = "{\r\n" + 
 			"	\"spec\": {\r\n" + 
@@ -464,15 +364,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"	}\r\n" + 
 			"}";
 	
-	public boolean updateCPU(String vmid, int num) {
-		try {
-			
-			patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/cpu", CPU.replace("NUMBER", String.valueOf(num)));
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean updateCPU(String vmid, int num) throws Exception {
+		patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/cpu", CPU.replace("NUMBER", String.valueOf(num)));
+		return true;
 	}
 	
 	static String MEMORY = "{\r\n" + 
@@ -482,15 +376,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"    }\r\n" + 
 			"}";
 	
-	public boolean updateRAM(String vmid, int size) {
-		try {
-			
-			patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	public boolean updateRAM(String vmid, int size) throws Exception {
+		patchWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/memory", MEMORY.replace("SIZE", String.valueOf(size)));
+		return true;
 	}
 	
 	/******************************************************************************
@@ -516,14 +404,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"}";
 	
 	public boolean plugVMDisk(String vmid, String name, long size, int unit) throws Exception {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk",
-					CREATE_DISK.replace("NAME", name).replace("SIZE", String.valueOf(size)).replace("UNIT", String.valueOf(unit)));
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk",
+				CREATE_DISK.replace("NAME", name).replace("SIZE", String.valueOf(size)).replace("UNIT", String.valueOf(unit)));
+		return true;
 	}
 	
 	public static String CREATE_STD_NIC = "{\r\n" + 
@@ -542,14 +425,9 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"}";
 	
 	public boolean plugVM_STD_NIC(String vmid, String name) throws Exception {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
-														CREATE_STD_NIC.replace("NAME", name));
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
+													CREATE_STD_NIC.replace("NAME", name));
+		return true;
 	}
 	
 	public static String CREATE_DVS_NIC = "{\r\n" + 
@@ -568,34 +446,19 @@ public class VirtualMachineImpl extends AbstractImpl  {
 			"}";
 	
 	public boolean plugVM_DVS_NIC(String vmid, String name) throws Exception {
-		try {
-			postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
-							CREATE_DVS_NIC.replace("NAME", name));
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		postWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet",
+						CREATE_DVS_NIC.replace("NAME", name));
+		return true;
 	}
 	
 	public boolean unplugVMDisk(String vmid, String diskId) throws Exception {
-		try {
-			listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk/" + diskId);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		listWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/disk/" + diskId);
+		return true;
 	}
 	
 	public boolean unplugVMNIC(String vmid, String nicId) throws Exception {
-		try {
-			deleteWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet/" + nicId);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		deleteWithoutCookie(this.client.getUrl() + "/rest/vcenter/vm/" + vmid + "/hardware/ethernet/" + nicId);
+		return true;
 	}
 	
 	public static String DVSID = "{\r\n" + 
