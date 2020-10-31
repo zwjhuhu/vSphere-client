@@ -508,7 +508,7 @@ public class VirtualMachineImpl extends AbstractImpl  {
 	public boolean validDVSPort(String dvsportid, String cookie) {
 		try {
 			String url = this.client.getUrl() + "/ui/list/ex/";
-			JsonNode postWithCookie = postWithCookie(url, DVSID.replace("DVSPORTID", dvsportid), cookie, null);
+			JsonNode postWithCookie = postWithCookie(url, DVSPortID.replace("DVSPORTID", dvsportid), cookie, null);
 			return postWithCookie.get("totalResultCount").asInt() != 0;
 		} catch (Exception e) {
 			e.printStackTrace();
