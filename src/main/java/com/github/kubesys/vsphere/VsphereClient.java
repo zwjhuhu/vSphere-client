@@ -102,6 +102,10 @@ public class VsphereClient {
     							initTrustManager), initTrustManager)
 				.hostnameVerifier(initHostnameVerifier())
 				.followRedirects(redirect)
+				.callTimeout(java.time.Duration.ZERO)
+				.connectTimeout(java.time.Duration.ZERO)
+				.readTimeout(java.time.Duration.ZERO)
+				.writeTimeout(java.time.Duration.ZERO)
 				.build();
 	}
 
