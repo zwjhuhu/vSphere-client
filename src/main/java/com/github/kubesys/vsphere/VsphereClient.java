@@ -81,7 +81,11 @@ public class VsphereClient {
 		this.httpClient = createHttpClient(false);
 		this.session = new ObjectMapper().readTree(
 				simpleLogin(username, password).body().byteStream()).get("value").asText();
-		virtualMachinePools().listNetworks();
+		try {
+			virtualMachines().valid(virtualMachinePools().listNetworks());
+		} catch (Exception ex) {
+			throw new Exception("Invalid url, or username, or password");
+		}
 	}
 
 	/*******************************************************
