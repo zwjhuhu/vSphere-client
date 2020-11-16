@@ -7,9 +7,9 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class CreateVMFromTemplateTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_934e58fa1a301c3707001f87aad3a050; VSPHERE-UI-JSESSIONID=969048449DF195774AC04B173FBB9409; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_a8c5ec1252c4957bdbf3a6dbc1c493b8";
-		String token = "f8793506-c5e3-4fd2-89cf-84579edff3a9";
 		VsphereClient vClient = getClient();
+		String cookie = vClient.getCookie();
+		String token = vClient.getXSRFToken(cookie);
 //		JsonNode createFromTemplate = vClient.virtualMachines().createFromTemplate("henry20", "vm-70", "9e4a98b3-189a-475b-b093-f5cda70cd2a5", "datastore-10", "group-v3", 
 //				"resgroup-17", "host-9", cookie, token);
 		JsonNode createFromTemplate = vClient.virtualMachines().createFromTemplate("henry22", "vm-70", "9e4a98b3-189a-475b-b093-f5cda70cd2a5", "datastore-10", "group-v3", 

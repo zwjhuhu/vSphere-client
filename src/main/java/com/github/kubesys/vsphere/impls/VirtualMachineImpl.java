@@ -515,4 +515,11 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		}
 		return false;
 	}
+	
+	public JsonNode vmDetail(String vm, String cookie) throws Exception {
+		String id = search(vm, "Virtual Machine", cookie)
+				.get("id").asText();
+		String url = this.client.getUrl() + "/ui/data/" + id + "?model=com.vmware.vsphere.client.h5.vm.model.VmSummaryData";
+		return listWithCookie(url, cookie);
+	}
 }

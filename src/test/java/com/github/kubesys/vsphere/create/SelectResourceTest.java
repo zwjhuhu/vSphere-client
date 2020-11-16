@@ -10,8 +10,9 @@ import com.github.kubesys.vsphere.VsphereClientTest;
 public class SelectResourceTest extends VsphereClientTest {
 	
 	public static void main(String[] args) throws Exception {
-		String cookie = "CastleSessionvsphere.test=_d5a0328e6e79f63ec29f4ca5a2ceb0d6; VSPHERE-UI-JSESSIONID=E6BAE73166209D01C1B8F08E4178FE8F; VSPHERE-USERNAME=Administrator%40VSPHERE.TEST; VSPHERE-CLIENT-SESSION-INDEX=_fb314e13d34fa59db89788cca9f0fafa";
 		VsphereClient vClient = getClient();
+		String cookie = vClient.getCookie();
+		String token = vClient.getXSRFToken(cookie);
 		String dcName = "Datacenter";
 		JsonNode dc = vClient.virtualMachines().searchUUID(dcName, "Datacenter", cookie);
 		String dcId = dc.get(0).get("results").get(0).get("id").asText();
@@ -31,6 +32,7 @@ public class SelectResourceTest extends VsphereClientTest {
 				String uuid = res.get("objRef").asText();
 				JsonNode list = vClient.virtualMachines().selectResource(type, uuid, cookie);
 				extracted(vClient, list, "\t" + spacing, cookie);
+				System.out.println(list.toPrettyString());
 			} 
 		}
 	}
