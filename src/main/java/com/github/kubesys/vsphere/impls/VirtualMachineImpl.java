@@ -369,6 +369,17 @@ public class VirtualMachineImpl extends AbstractImpl  {
 		return true;
 	}
 	
+	static String INSTALL = "{\r\n" + 
+			"  \"operation\": \"mountInstaller\"\r\n" + 
+			"}";
+			
+	public void installVMTools(String vm, String cookie, String token) throws Exception {
+		JsonNode searchUUID = searchUUID(vm, "Virtual Machine", cookie);
+		String id = searchUUID.get(0).get("results").get(0).get("id").asText().replace(":", "%3A");
+		String url = this.client.getUrl() + "/ui/mutation/apply/" + id + "?propertyObjectType=com.vmware.vsphere.client.vm.tools.VmToolsInstallerSpec";
+		postWithCookie(url, INSTALL, cookie, token);
+	}
+	
 	static String MEMORY = "{\r\n" + 
 			"    \"spec\": {\r\n" + 
 			"        \"hot_add_enabled\": false,\r\n" + 
