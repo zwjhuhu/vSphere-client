@@ -32,7 +32,6 @@ public class SelectResourceTest extends VsphereClientTest {
 				String uuid = res.get("objRef").asText();
 				JsonNode list = vClient.virtualMachines().selectResource(type, uuid, cookie);
 				extracted(vClient, list, "\t" + spacing, cookie);
-				System.out.println(list.toPrettyString());
 			} 
 		}
 	}
