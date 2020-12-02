@@ -4,16 +4,83 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.kubesys</groupId>
-	<artifactId>vsphere-client</artifactId>
+	<artifactId>vsphere-client-skywin</artifactId>
 	<version>0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>vsphere-jdk</name>
 	<url>http://maven.apache.org</url>
-
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<vslib.path>./lib</vslib.path>
+		<vspherewssdk.version>6.5</vspherewssdk.version>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.8</source>
+					<target>1.8</target>
+					<fork>true</fork>
+					<meminitial>1024m</meminitial>
+					<maxmem>2048m</maxmem>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<id>install-vim25</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<packaging>jar</packaging>
+							<groupId>vim25</groupId>
+							<artifactId>vim25</artifactId>
+							<version>${vspherewssdk.version}</version>
+							<file>${vslib.path}/vim25.jar</file>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-wssamples</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<packaging>jar</packaging>
+							<groupId>wssamples</groupId>
+							<artifactId>wssamples</artifactId>
+							<version>${vspherewssdk.version}</version>
+							<file>${vslib.path}/wssamples.jar</file>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
@@ -40,5 +107,49 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.11</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>vim25</groupId>
+			<artifactId>vim25</artifactId>
+			<version>${vspherewssdk.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>wssamples</groupId>
+			<artifactId>wssamples</artifactId>
+			<version>${vspherewssdk.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.62</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>maven-ali</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public//</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
