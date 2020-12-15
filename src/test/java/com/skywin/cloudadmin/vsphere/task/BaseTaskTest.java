@@ -12,9 +12,10 @@ public abstract class BaseTaskTest {
     
     public BaseTaskTest() {
         try {
-            client = new VsphereClient("https", "192.168.96.128", 443, 
+            client = new VsphereClient("https", "192.168.23.148", 443, 
                 "administrator@vsphere.local", "Qwe@1234", "6.5");
         }catch (Exception e) {
+        	e.printStackTrace();
             client = null;
         }
     }
